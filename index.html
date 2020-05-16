@@ -1,0 +1,45 @@
+<head>
+    <link rel="stylesheet"  type="text/css" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <script src="garden.js"></script>
+</head>
+<body>
+    <div id="top-bar">
+        <i class="fa float-left fa-user"></i>
+        <span id="user-menu">
+
+        </span>
+        <span id="title-text">
+            Comfy Garden III
+        </span>
+    </div>
+    <div id="media-pane">
+        <div id="garden">
+            <canvas id="garden-canvas"></canvas>
+            <span id="tool-menu">
+            </span>
+        </div>
+        <div id="chat">
+            <div id="chat-title">
+                <i class="fa fa-arrow-right"></i>  GARDEN CHAT<i class="fa fa-users"></i>
+            </div>
+            <div id="chat-display">
+                <ul id="message-list">
+                </ul>
+            </div>
+            <form id="chat-input-form">
+                <input id="chat-input"/>
+                <button id="chat-button"><i class="fa fa-reply"></i></button>
+            </form>
+        </div>
+    </div>
+    <div id="bottom-bar">
+        <span id="activity-counter">
+            Active Users:  <span id="active-number"> 0 </span>
+        </span>
+        <span id="info-span">
+            <a class="info-link" href="">about</link><a   class="info-link" href="">github</link><a  class="info-link" href="">contact</link> 
+        </span>
+    </div>
+</body>

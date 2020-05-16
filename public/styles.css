@@ -1,0 +1,161 @@
+*{
+    font-family: sans-serif;
+}
+
+#top-bar{
+    top: 0;
+    right: 0;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    background-color: rgba(226, 252, 214, 0.667);
+}
+
+#media-pane{
+    width: 73vw;
+    height: 60vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8em;
+    position: relative;
+}
+
+#garden{
+    width: 80%;
+    height: 100%;
+    background-color: green;
+}
+
+#chat{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 20%;
+    height: 100%;
+    background-color: antiquewhite;
+}
+
+
+#bottom-bar{
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    background-color: green;
+}
+
+#title-text{
+    float: right;
+    padding: 1em;
+}
+
+#info-span{
+    float: right;
+    padding: 1em;
+}
+
+#chat-input-form{
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    margin-block-end: 0em;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: palevioletred;
+}
+#garden-canvas{
+    width: 100%;
+    height: 100%;
+}
+
+#chat-display{
+    width: 95%;
+    height: 80%;
+    background-color: antiquewhite;
+    border: 1px solid black;
+    margin: auto;
+    margin-top: 1vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#chat-title{
+    text-align: center;
+    padding-top: 1vh;
+    padding-left: 1vw;
+}
+.fa-arrow-right{
+    padding-right: 1em;
+    padding-right: .3em;
+    float: left;
+}
+.fa-users{
+    padding-right: .3em;
+    padding-right: 1em;
+    float: right;
+    
+}
+#chat-input{
+    border: none;
+    width: 70%;
+    margin: 0.5vw;
+    margin-right: 0;
+    
+}
+
+#chat-button{
+    width: auto;
+    float: right;
+    width: 20%;
+    margin: 0.5vw;
+    margin-left: 0;
+}
+#activity-counter{
+    font-weight: bolder;
+    float: left;
+    padding: 1em;
+}
+#user-menu{
+    float: left;
+    padding: 1em;
+}
+#user-menu{
+    float: left;
+    padding: 1em;
+}
+.float-left{
+    float: left;
+    padding: 1em;
+}
+#message-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+}
+
+.user-chat-item{
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    font-size: small;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.user-name-chat-span{
+    font-weight: bolder;
+}
+
+.user-name-chat-span::after{
+    content: ": ";
+}
+
+
+.user-text-chat-span{
+
+}
+
+.info-link{
+    padding-left: 1em;
+}
