@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function(){
         this.newKeyInput = false;
         this.newMouseInput = false;
         this.socket = socket;
-        this.id = socket.id;
         this.input = {
             mouse: false
         }
@@ -117,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 this.context.rect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
                 //if its US we are drawing, move camera
-                if(player.id == this.id){
+
+                if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
                     console.log(player.x, player.y)
                 }
