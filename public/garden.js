@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function(){
     })
 
     socket.on('user-input', function (data) {
-        console.log(data.player.user)
         shapeGame.updatePlayer(data)
     })
 
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
         this.updatePlayer = function(data){
             if(data.player.user == user){
-                console.log("Updating player pos")
                 this.player.pos = data.player.pos;
             }
             this.context.clearRect(data.player.previousPos.x-10, data.player.previousPos.y - 10 , 161, 111)
