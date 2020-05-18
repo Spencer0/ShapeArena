@@ -37,6 +37,10 @@ io.on('connection', (socket) => {
         io.emit('user-input', data);
       });
 
+    socket.on('latency', function (fn) {
+        fn();
+    }); 
+
     function updatePlayer(data){
         function updatePos(direction, player){
             switch(direction){

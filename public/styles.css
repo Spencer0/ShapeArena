@@ -1,7 +1,12 @@
 *{
     font-family: sans-serif;
 }
-
+#ping-display{
+    margin: 0;
+    top:10em; 
+    left: 5em;
+    position: absolute;
+}
 #top-bar{
     top: 0;
     right: 0;

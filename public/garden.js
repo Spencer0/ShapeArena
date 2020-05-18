@@ -27,6 +27,13 @@ document.addEventListener('DOMContentLoaded', function(){
         shapeGame.updatePlayer(data)
     })
 
+    let ping = Date.now()
+    socket.emit('latency', function () {
+        latency = Date.now() - ping;
+        console.log(latency);
+        document.getElementById("ping-display").innerText = "Ping: " + latency; 
+    });
+
     document.getElementById("chat-input-form").addEventListener("submit", function(e){
         e.preventDefault()
         socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}))
