@@ -38,8 +38,8 @@ io.on('connection', (socket) => {
       });
 
     function updatePlayer(data){
-        if(data.player.direction != ""){
-            switch(data.player.direction){
+        function updatePos(direction, player){
+            switch(direction){
                 case "w":
                     data.player.pos.y -= 10
                     break;
@@ -57,6 +57,17 @@ io.on('connection', (socket) => {
                     break;
             }
         }
+            
+        
+        if(data.player.direction){
+            console.log("applying direction one", data.player.direction, data.player.pos)
+            updatePos(data.player.direction, data.player)
+        }
+        if(data.player.directionTwo){
+            console.log("applying direction two", data.player.directionTwo, data.player.pos)
+            updatePos(data.player.directionTwo, data.player)
+        }
+        console.log("applying direction done", data.player.direction, data.player.directionTwo, data.player.pos)
     }
 });
 

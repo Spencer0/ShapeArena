@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function(){
             color: "black",
             direction: "",
             previousPos: {},
+            directionTwo: "",
 
         }
 
@@ -76,16 +77,34 @@ document.addEventListener('DOMContentLoaded', function(){
 
         this.canvas.addEventListener("keydown", function(e){
             self.player.move = true;
-            self.player.direction = e.key;
+            if(self.player.direction){
+                console.log("setting direction two")
+                self.player.directionTwo = e.key;
+            }else{
+                self.player.direction = e.key;
+            }
+            
         })
+
+        this.canvas.addEventListener("keyup", function(e){
+            self.player.move = true;
+            if(self.player.direction){
+                console.log("setting direction two")
+                self.player.directionTwo = e.key;
+            }else{
+                self.player.direction = e.key;
+            }
+            
+        })
+
 
         this.updatePlayer = function(data){
             if(data.player.user == user){
                 this.player.pos = data.player.pos;
             }
-            this.context.clearRect(data.player.previousPos.x-10, data.player.previousPos.y-10, 180, 130)
+            this.context.clearRect(data.player.previousPos.x-25, data.player.previousPos.y-25, 180, 130)
             this.context.beginPath();
-            this.context.rect(data.player.pos.x, data.player.pos.y, 150, 100);
+            this.context.rect(data.player.pos.x, data.player.pos.y, 75, 50);
             this.context.stroke();
         }
 
@@ -97,11 +116,12 @@ document.addEventListener('DOMContentLoaded', function(){
                 this.player.click = false;
                 socket.emit('user-input', { player: this.player } );
                 this.player.direction = ""
+                this.player.directionTwo = ""
             }
             setTimeout(mainLoop, 25);
         }
         this.context.beginPath();
-        this.context.rect(this.player.pos.x, this.player.pos.y, 150, 100);
+        this.context.rect(this.player.pos.x, this.player.pos.y, 75, 50);
         this.context.stroke();
         mainLoop();
     }
