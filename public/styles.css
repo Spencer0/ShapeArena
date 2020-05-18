@@ -20,7 +20,7 @@
     position: relative;
 }
 
-#garden{
+#shape-arena{
     width: 80%;
     height: 100%;
     background-color: green;
@@ -65,7 +65,7 @@
     margin-right: auto;
     background-color: palevioletred;
 }
-#garden-canvas{
+#shape-arena-canvas{
     width: 100%;
     height: 100%;
 }

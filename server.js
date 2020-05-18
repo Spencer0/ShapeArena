@@ -31,7 +31,33 @@ io.on('connection', (socket) => {
       io.emit('message-event', msg);
     });
 
+    socket.on('user-input', (data) => {
+        console.log("shape-game-input" ,data )
+        updatePlayer(data);
+        io.emit('user-input', data);
+      });
 
+    function updatePlayer(data){
+        if(data.player.direction != ""){
+            switch(data.player.direction){
+                case "w":
+                    data.player.pos.y -= 10
+                    break;
+                case "a":
+                    data.player.pos.x -= 10
+                    break;
+                case "s":
+                    data.player.pos.y += 10
+                    break;
+                case "d":
+                    data.player.pos.x += 10
+                    break;
+                default:
+                    console.log("Bad direction");
+                    break;
+            }
+        }
+    }
 });
 
 
