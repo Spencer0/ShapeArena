@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function(){
     const socket = io()
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
-    let colors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
+    let trimColors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
-    let color = colors[Math.floor(Math.random() * colors.length)];
+    let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let userInput = document.getElementById("chat-input")
     let activityCounter = document.getElementById("active-number")
-    let shapeGame = new squareGame(user, color, socket)
+    let shapeGame = new squareGame(user, socket)
     let ping = Date.now()
 
 
@@ -59,16 +59,16 @@ document.addEventListener('DOMContentLoaded', function(){
         return li;
     }
 
-    function squareGame(user, color, socket){
+    function squareGame(user, socket){
         this.canvas  = document.getElementById('shape-arena-canvas');
-        this.canvas.height = window.innerHeight;
-        this.canvas.width = window.innerWidth;
+        this.canvas.height = 6000;
+        this.canvas.width = 8000;
         this.context = this.canvas.getContext('2d');
-        this.currentlyDown = {}
-        this.context.strokeStyle = color;
+        this.keysCurrentlyDown = {};
         this.newKeyInput = false;
         this.newMouseInput = false;
         this.socket = socket;
+        this.id = socket.id;
         this.input = {
             mouse: false
         }
@@ -80,26 +80,32 @@ document.addEventListener('DOMContentLoaded', function(){
         };
 
         this.canvas.addEventListener("keydown", function(e){
-            self.currentlyDown[e.key] = 1;
+            self.keysCurrentlyDown[e.key] = 1;
             self.newKeyInput = true;
         })
 
         this.canvas.addEventListener("keyup", function(e){
-            console.log(self.currentlyDown)
-            delete self.currentlyDown[e.key]
-            console.log(self.currentlyDown)
-            if(Object.keys(self.currentlyDown).length === 0){
+            console.log(self.keysCurrentlyDown)
+            delete self.keysCurrentlyDown[e.key]
+            console.log(self.keysCurrentlyDown)
+            if(Object.keys(self.keysCurrentlyDown).length === 0){
                 console.log("stopping inputs")
                 self.newKeyInput = false;
             }
         })
 
         this.submitInput = function(){
-            if(this.currentlyDown === {}){return;}
-            this.socket.emit('user-input', this.currentlyDown)
+            if(this.keysCurrentlyDown === {}){return;}
+            this.socket.emit('user-input', this.keysCurrentlyDown)
             this.input = {
                 mouse: false,
             }
+        }
+
+        this.updateCamera = function(x,y){
+            let canvasContainer = document.getElementById("shape-arena");
+            canvasContainer.scroll(x - (canvasContainer.offsetWidth / 2) + 50, y - (canvasContainer.offsetHeight / 2)  + 50);
+            console.log("canvas size", canvasContainer.offsetWidth, canvasContainer.offsetHeight)
         }
 
         this.drawState = function(state){
@@ -107,8 +113,14 @@ document.addEventListener('DOMContentLoaded', function(){
             for(key of Object.keys(state.player)){
                 let player = state.player[key]
                 this.context.beginPath();
+                this.context.strokeStyle = player.color;
                 this.context.rect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
+                //if its US we are drawing, move camera
+                if(player.id == this.id){
+                    this.updateCamera(player.x, player.y);
+                    console.log(player.x, player.y)
+                }
             }
             if(this.newMouseInput){
                 this.submitInput();

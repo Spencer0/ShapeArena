@@ -3,7 +3,9 @@ const app = express();
 var http = require('http').createServer(app);
 const port = process.env.PORT || 3000
 const io = require('socket.io')(http);
-
+const gameWorldHeight = 6000;
+const gameWorldWidth = 8000;
+const canvasPadding = 25;
 
 let activeUsers = 0;
 const shapescooter = new ShapeScooter();
@@ -58,10 +60,12 @@ function ShapeScooter(){
 
     this.newPlayer = function(socketId){
         this.state.player[socketId] = {
-            x: 10 * activeUsers,
-            y: 10 * activeUsers,
+            x: 30 * activeUsers,
+            y: 30 * activeUsers,
             width: 15,
-            height: 20
+            height: 20,
+            color: this.randomColor(),
+            id: socketId
         }
     }
 
@@ -69,6 +73,21 @@ function ShapeScooter(){
         delete this.state.player[socketId];
     }
 
+    this.randomColor = function() {
+        let trimColors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
+        return trimColors[Math.floor(Math.random() * trimColors.length)];
+        /*
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+        */
+    }
+
+
+      
     this.update = function(input, id){
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
@@ -76,15 +95,19 @@ function ShapeScooter(){
         while(directionCount--){
             switch(directionString.charAt(directionCount)){
                 case "w":
+                    if(player.y <= canvasPadding){ continue }
                     player.y -= 10;
                     break;
                 case "a":
+                    if(player.x <= canvasPadding){ continue }
                     player.x -= 10;
                     break;
                 case "s":
+                    if(player.y >= gameWorldHeight-canvasPadding){ continue }
                     player.y += 10;
                     break;
                 case "d":
+                    if(player.x >= gameWorldHeight - canvasPadding){ continue }
                     player.x += 10;
                     break;
                 default:
