@@ -6,6 +6,7 @@ const io = require('socket.io')(http);
 
 
 let activeUsers = 0;
+const shapescooter = new ShapeScooter();
 
 //Serve static 
 app.use(express.static('public'))
@@ -18,11 +19,13 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected');
     console.log('ACTIVE USERS:', ++activeUsers);
+    shapescooter.newPlayer(socket.id);
     io.emit('connection-event', activeUsers);
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
         console.log('ACTIVE USERS:', --activeUsers);
+        shapescooter.removePlayer(socket.id);
         io.emit('connection-event', activeUsers);
     });
 
@@ -32,50 +35,68 @@ io.on('connection', (socket) => {
     });
 
     socket.on('user-input', (data) => {
-        console.log("shape-game-input" ,data )
-        updatePlayer(data);
-        io.emit('user-input', data);
+        shapescooter.update(data, socket.id)
       });
 
     socket.on('latency', function (fn) {
         fn();
     }); 
 
-    function updatePlayer(data){
-        function updatePos(direction, player){
-            switch(direction){
-                case "w":
-                    data.player.pos.y -= 10
-                    break;
-                case "a":
-                    data.player.pos.x -= 10
-                    break;
-                case "s":
-                    data.player.pos.y += 10
-                    break;
-                case "d":
-                    data.player.pos.x += 10
-                    break;
-                default:
-                    console.log("Bad direction");
-                    break;
-            }
-        }
-            
-        
-        if(data.player.direction){
-            console.log("applying direction one", data.player.direction, data.player.pos)
-            updatePos(data.player.direction, data.player)
-        }
-        if(data.player.directionTwo){
-            console.log("applying direction two", data.player.directionTwo, data.player.pos)
-            updatePos(data.player.directionTwo, data.player)
-        }
-        console.log("applying direction done", data.player.direction, data.player.directionTwo, data.player.pos)
-    }
 });
 
 
 http.listen(port, () => {
     console.log('Garden Server, Port: ', port);
 });
+
+//Basic Canvas Stream
+function ShapeScooter(){
+
+    this.state = {
+        player: {}
+    }
+
+    this.newPlayer = function(socketId){
+        this.state.player[socketId] = {
+            x: 10 * activeUsers,
+            y: 10 * activeUsers,
+            width: 15,
+            height: 20
+        }
+    }
+
+    this.removePlayer = function(socketId){
+        delete this.state.player[socketId];
+    }
+
+    this.update = function(input, id){
+        console.log("input", input)
+        let directionString = Object.keys(input).join("");
+        let directionCount = directionString.length;
+        let player = this.state.player[id];
+        while(directionCount--){
+            switch(directionString.charAt(directionCount)){
+                case "w":
+                    player.y -= 10;
+                    break;
+                case "a":
+                    player.x -= 10;
+                    break;
+                case "s":
+                    player.y += 10;
+                    break;
+                case "d":
+                    player.x += 10;
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+    }
+
+    setInterval(() => {
+        io.sockets.emit('state', this.state);
+    }, 1000 / 60);
+    
+}

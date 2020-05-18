@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
     const socket = io()
     const gridsize = {x: 25, y: 25}
-    console.log("dom loaded")
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
     let colors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
@@ -9,10 +8,8 @@ document.addEventListener('DOMContentLoaded', function(){
     let userInput = document.getElementById("chat-input")
     let activityCounter = document.getElementById("active-number")
     let userNameField = document.getElementById("user-menu").innerText = user;
-    let shapeGame = new squareGame(user, color)
-    document.getElementById("chat-input") .addEventListener("click", function(event) { 
-        event.preventDefault() 
-    });
+    let shapeGame = new squareGame(user, color, socket)
+    let ping = Date.now()
 
     socket.on("connection-event", function(msg){
         console.log("Friends appearing! Active users: ", msg)
@@ -23,11 +20,11 @@ document.addEventListener('DOMContentLoaded', function(){
         newChatMessageEvent(JSON.parse(msg));
     })
 
-    socket.on('user-input', function (data) {
-        shapeGame.updatePlayer(data)
+    socket.on('state', function (state) {
+        shapeGame.drawState(state)
     })
 
-    let ping = Date.now()
+
     socket.emit('latency', function () {
         latency = Date.now() - ping;
         console.log(latency);
@@ -39,6 +36,10 @@ document.addEventListener('DOMContentLoaded', function(){
         socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}))
         userInput.value = ""
     })
+
+    document.getElementById("chat-input") .addEventListener("click", function(event) { 
+        event.preventDefault() 
+    });
 
     function newChatMessageEvent(msg){
         let li = document.createElement('li');
@@ -58,79 +59,65 @@ document.addEventListener('DOMContentLoaded', function(){
         return li;
     }
 
-    function squareGame(user, color){
+    function squareGame(user, color, socket){
         this.canvas  = document.getElementById('shape-arena-canvas');
         this.canvas.height = window.innerHeight;
         this.canvas.width = window.innerWidth;
         this.context = this.canvas.getContext('2d');
-        this.context.strokeStyle = color
-        var self = this;
-
-        this.player = {
-            user: user,
-            click: false,
-            move: false,
-            pos: {x:0, y:0},
-            color: "black",
-            direction: "",
-            previousPos: {},
-            directionTwo: "",
-
+        this.currentlyDown = {}
+        this.context.strokeStyle = color;
+        this.newKeyInput = false;
+        this.newMouseInput = false;
+        this.socket = socket;
+        this.input = {
+            mouse: false
         }
+        let self = this;
 
         this.canvas.onmouseup = function(e){ 
-            self.player.click = true;
+            self.input.mouse = true;
+            self.newMouseInput = true;
         };
 
         this.canvas.addEventListener("keydown", function(e){
-            self.player.move = true;
-            if(self.player.direction){
-                console.log("setting direction two")
-                self.player.directionTwo = e.key;
-            }else{
-                self.player.direction = e.key;
-            }
-            
+            self.currentlyDown[e.key] = 1;
+            self.newKeyInput = true;
         })
 
         this.canvas.addEventListener("keyup", function(e){
-            self.player.move = true;
-            if(self.player.direction){
-                console.log("setting direction two")
-                self.player.directionTwo = e.key;
-            }else{
-                self.player.direction = e.key;
+            console.log(self.currentlyDown)
+            delete self.currentlyDown[e.key]
+            console.log(self.currentlyDown)
+            if(Object.keys(self.currentlyDown).length === 0){
+                console.log("stopping inputs")
+                self.newKeyInput = false;
             }
-            
         })
 
-
-        this.updatePlayer = function(data){
-            if(data.player.user == user){
-                this.player.pos = data.player.pos;
+        this.submitInput = function(){
+            if(this.currentlyDown === {}){return;}
+            this.socket.emit('user-input', this.currentlyDown)
+            this.input = {
+                mouse: false,
             }
-            this.context.clearRect(data.player.previousPos.x-25, data.player.previousPos.y-25, 180, 130)
-            this.context.beginPath();
-            this.context.rect(data.player.pos.x, data.player.pos.y, 75, 50);
-            this.context.stroke();
         }
 
-        const mainLoop = () => {
-            if (this.player.click || this.player.move) {
-                // send input and name to to the server
-                this.player.previousPos = this.player.pos;
-                this.player.move = false;
-                this.player.click = false;
-                socket.emit('user-input', { player: this.player } );
-                this.player.direction = ""
-                this.player.directionTwo = ""
+        this.drawState = function(state){
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            for(key of Object.keys(state.player)){
+                let player = state.player[key]
+                this.context.beginPath();
+                this.context.rect(player.x,player.y,player.width,player.height);
+                this.context.stroke();
             }
-            setTimeout(mainLoop, 25);
+            if(this.newMouseInput){
+                this.submitInput();
+                this.newMouseInput = false;
+            }
+            if(this.newKeyInput){
+                this.submitInput();
+            }
         }
-        this.context.beginPath();
-        this.context.rect(this.player.pos.x, this.player.pos.y, 75, 50);
-        this.context.stroke();
-        mainLoop();
     }
     
     
