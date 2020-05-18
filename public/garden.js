@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function(){
     let userInput = document.getElementById("chat-input")
     let activityCounter = document.getElementById("active-number")
     let shapeGame = new squareGame(user, socket)
-    let ping = Date.now()
+    pingCheck();
+    setInterval(pingCheck, 2000)
 
 
     socket.on("connection-event", function(msg){
@@ -24,11 +25,15 @@ document.addEventListener('DOMContentLoaded', function(){
         shapeGame.drawState(state)
     })
 
-    socket.emit('latency', function () {
-        latency = Date.now() - ping;
-        console.log(latency);
-        document.getElementById("ping-display").innerText = "Ping: " + latency; 
-    });
+    function pingCheck(){
+        let ping = Date.now()
+        socket.emit('latency', function () {
+            latency = Date.now() - ping;
+            console.log(latency);
+            document.getElementById("ping-display").innerText = "Ping: " + latency; 
+        });
+    }
+   
 
     document.getElementById("chat-input-form").addEventListener("submit", function(e){
         e.preventDefault()
