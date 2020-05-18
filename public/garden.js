@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     socket.on("message-event", function(msg){
         newChatMessageEvent(JSON.parse(msg));
+        scrollChatDiv()
     })
 
     socket.on('state', function (state) {
@@ -40,7 +41,10 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     document.getElementById("user-menu").innerText = user;
-
+    function scrollChatDiv(){
+        var div = document.getElementById("chat-display");
+        div.scrollTop = div.scrollHeight - div.clientHeight;
+    }
     function newChatMessageEvent(msg){
         let li = document.createElement('li');
         li.classList.add("user-chat-item");
