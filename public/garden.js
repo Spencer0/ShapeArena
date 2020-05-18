@@ -70,8 +70,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function squareGame(user, socket){
         this.canvas  = document.getElementById('shape-arena-canvas');
+        this.backgroundCanvas = document.getElementById('shape-arena-background-canvas')
+        this.backgroundContext = this.backgroundCanvas.getContext('2d');
         this.canvas.height = 6000;
         this.canvas.width = 8000;
+        this.backgroundCanvas.height = 6000;
+        this.backgroundCanvas.width = 8000;
         this.context = this.canvas.getContext('2d');
         this.keysCurrentlyDown = {};
         this.newKeyInput = false;
@@ -81,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function(){
             mouse: false
         }
         let self = this;
+
 
         this.canvas.onmouseup = function(e){ 
             self.input.mouse = true;
@@ -93,9 +98,7 @@ document.addEventListener('DOMContentLoaded', function(){
         })
 
         this.canvas.addEventListener("keyup", function(e){
-            console.log(self.keysCurrentlyDown)
             delete self.keysCurrentlyDown[e.key]
-            console.log(self.keysCurrentlyDown)
             if(Object.keys(self.keysCurrentlyDown).length === 0){
                 console.log("stopping inputs")
                 self.newKeyInput = false;
@@ -113,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function(){
         this.updateCamera = function(x,y){
             let canvasContainer = document.getElementById("shape-arena");
             canvasContainer.scroll(x - (canvasContainer.offsetWidth / 2) + 50, y - (canvasContainer.offsetHeight / 2)  + 50);
-            console.log("canvas size", canvasContainer.offsetWidth, canvasContainer.offsetHeight)
         }
 
         this.drawState = function(state){
@@ -122,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 let player = state.player[key]
                 this.context.beginPath();
                 this.context.strokeStyle = player.color;
-                this.context.rect(player.x,player.y,player.width,player.height);
+                this.context.fillRect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
                 //if its US we are drawing, move camera
 
@@ -139,6 +141,28 @@ document.addEventListener('DOMContentLoaded', function(){
                 this.submitInput();
             }
         }
+
+        this.randomColor = function(e){
+            let letters = '0123456789ABCDEF';
+            let color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        this.drawBackground = function(){
+            for(let i = 0; i < this.backgroundCanvas.width; i += 10){
+                for(let j = 0; j < this.backgroundCanvas.height; j += 10){
+                    this.backgroundContext.beginPath();
+                    this.backgroundContext.strokeStyle = this.randomColor();
+                    this.backgroundContext.rect(i,j,80,60);
+                    this.backgroundContext.stroke();
+                }
+            }
+        }
+
+        this.drawBackground();
     }
     
 });

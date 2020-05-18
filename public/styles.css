@@ -1,6 +1,15 @@
 *{
     font-family: sans-serif;
 }
+
+canvas {
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+#canvases{
+    position: relative;
+}
 #ping-display{
     margin: 0;
     top:10em; 
@@ -32,8 +41,8 @@
     overflow: hidden;
 }
 
-#shape-arena-canvas{
-    background-image: url('https://images.alphacoders.com/685/685897.jpg');
+#shape-arena-background-canvas{
+    background-color: purple;
 }
 #chat{
     position: absolute;
