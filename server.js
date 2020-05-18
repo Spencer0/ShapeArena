@@ -70,7 +70,6 @@ function ShapeScooter(){
     }
 
     this.update = function(input, id){
-        console.log("input", input)
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
         let player = this.state.player[id];
@@ -92,11 +91,8 @@ function ShapeScooter(){
                     break;
             }
         }
-        
     }
-
     setInterval(() => {
-        io.sockets.emit('state', this.state);
+            io.sockets.emit('state', this.state);
     }, 1000 / 60);
-    
 }

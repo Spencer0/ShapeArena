@@ -1,15 +1,14 @@
 document.addEventListener('DOMContentLoaded', function(){
     const socket = io()
-    const gridsize = {x: 25, y: 25}
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
     let colors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
     let color = colors[Math.floor(Math.random() * colors.length)];
     let userInput = document.getElementById("chat-input")
     let activityCounter = document.getElementById("active-number")
-    let userNameField = document.getElementById("user-menu").innerText = user;
     let shapeGame = new squareGame(user, color, socket)
     let ping = Date.now()
+
 
     socket.on("connection-event", function(msg){
         console.log("Friends appearing! Active users: ", msg)
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function(){
     socket.on('state', function (state) {
         shapeGame.drawState(state)
     })
-
 
     socket.emit('latency', function () {
         latency = Date.now() - ping;
@@ -40,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById("chat-input") .addEventListener("click", function(event) { 
         event.preventDefault() 
     });
+
+    document.getElementById("user-menu").innerText = user;
 
     function newChatMessageEvent(msg){
         let li = document.createElement('li');
@@ -119,6 +119,5 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         }
     }
-    
     
 });
