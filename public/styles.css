@@ -32,6 +32,9 @@
     overflow: hidden;
 }
 
+#shape-arena-canvas{
+    background-image: url('https://images.alphacoders.com/685/685897.jpg');
+}
 #chat{
     position: absolute;
     top: 0px;
