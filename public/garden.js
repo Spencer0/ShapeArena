@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function(){
             if(data.player.user == user){
                 this.player.pos = data.player.pos;
             }
-            this.context.clearRect(data.player.previousPos.x - 30, data.player.previousPos.y - 30 , 131, 131)
+            this.context.clearRect(data.player.previousPos.x-10, data.player.previousPos.y-10, 180, 130)
             this.context.beginPath();
             this.context.rect(data.player.pos.x, data.player.pos.y, 150, 100);
             this.context.stroke();
