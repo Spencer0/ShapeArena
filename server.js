@@ -211,6 +211,7 @@ function ShapeScooter(){
                         if(this.collides(this.state.enemies[enemyId], bullet)){
                             if(this.state.enemies[enemyId].life === 0){
                                 delete this.state.enemies[enemyId] 
+                                this.state.enemyCount--;
                                 this.state.player[playerId].width += 3;
                                 this.state.player[playerId].height += 1;
                                 this.state.player[playerId].bulletRadius += 0.2;

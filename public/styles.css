@@ -59,7 +59,13 @@ canvas {
     height: 100%;
     background-color: antiquewhite;
 }
-
+#trim-button-container{
+    padding: 1em;
+}
+#new-trim-button{
+    float: right;
+    margin: 1em;
+}
 
 #bottom-bar{
     color: black;
@@ -72,8 +78,11 @@ canvas {
 }
 
 #title-text{
-    float: right;
-    padding: 1em;
+    margin-left: 40%;
+    width: 10em;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-variant: small-caps;
+    font-size: 24px;
 }
 
 #info-span{
@@ -89,7 +98,6 @@ canvas {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    background-color: palevioletred;
 }
 
 #chat-display{

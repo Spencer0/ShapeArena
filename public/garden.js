@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', function(){
         e.preventDefault();
         randomTrimColor();
     })
+
+    document.getElementById("new-trim-button").addEventListener("click", function(e){
+        e.preventDefault();
+        randomTrimColor();
+    })
     document.getElementById("chat-input-form").addEventListener("submit", function(e){
         e.preventDefault()
         socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}))
