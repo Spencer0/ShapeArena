@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function(){
-    const socket = io()
+    
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
     let trimColors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
+    const socket = io({ query: "user="+user })
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let userInput = document.getElementById("chat-input")
     let activityCounter = document.getElementById("active-number")
@@ -121,11 +122,17 @@ document.addEventListener('DOMContentLoaded', function(){
         this.drawState = function(state){
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
+             
                 let player = state.player[key]
+                console.log(player)
                 this.context.beginPath();
-                this.context.strokeStyle = player.color;
+                this.context.fillStyle = player.color;
                 this.context.fillRect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
+                this.context.font = "16px sans sherif";
+                this.context.strokeStyle = "white";
+                this.context.fillStyle = "white";
+                this.context.fillText(player.user, player.x , player.y + player.height + 10 );
                 //if its US we are drawing, move camera
 
                 if(player.id == this.socket.id){
@@ -152,8 +159,8 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         this.drawBackground = function(){
-            for(let i = 0; i < this.backgroundCanvas.width; i += 10){
-                for(let j = 0; j < this.backgroundCanvas.height; j += 10){
+            for(let i = 0; i < this.backgroundCanvas.width; i += 30){
+                for(let j = 0; j < this.backgroundCanvas.height; j += 50){
                     this.backgroundContext.beginPath();
                     this.backgroundContext.strokeStyle = this.randomColor();
                     this.backgroundContext.rect(i,j,80,60);

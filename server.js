@@ -19,9 +19,10 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', (socket) => {
+    let newUserName = socket.handshake.query['user'];
     console.log('a user connected');
     console.log('ACTIVE USERS:', ++activeUsers);
-    shapescooter.newPlayer(socket.id);
+    shapescooter.newPlayer(socket.id, newUserName);
     io.emit('connection-event', activeUsers);
 
     socket.on('disconnect', () => {
@@ -58,14 +59,15 @@ function ShapeScooter(){
         player: {}
     }
 
-    this.newPlayer = function(socketId){
+    this.newPlayer = function(socketId, userName){
         this.state.player[socketId] = {
             x: 30 * activeUsers,
             y: 30 * activeUsers,
-            width: 15,
+            width: 35,
             height: 20,
             color: this.randomColor(),
-            id: socketId
+            id: socketId,
+            user: userName,
         }
     }
 
