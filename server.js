@@ -60,6 +60,7 @@ function ShapeScooter(){
     }
 
     this.newPlayer = function(socketId, userName){
+        if(!userName){return}
         this.state.player[socketId] = {
             x: 30 * activeUsers,
             y: 30 * activeUsers,

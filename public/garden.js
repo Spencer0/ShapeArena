@@ -122,9 +122,7 @@ document.addEventListener('DOMContentLoaded', function(){
         this.drawState = function(state){
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
-             
                 let player = state.player[key]
-                console.log(player)
                 this.context.beginPath();
                 this.context.fillStyle = player.color;
                 this.context.fillRect(player.x,player.y,player.width,player.height);
@@ -137,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
                 if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
-                    console.log(player.x, player.y)
                 }
             }
             if(this.newMouseInput){
