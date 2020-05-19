@@ -37,8 +37,12 @@ io.on('connection', (socket) => {
       io.emit('message-event', msg);
     });
 
+    socket.on('error', (e) => {
+        console.log("ERORR", e)
+    })
+
     socket.on('user-input', (data) => {
-        shapescooter.update(data, socket.id)
+        shapescooter.updatePlayerPosition(data, socket.id)
       });
 
     socket.on('latency', function (fn) {
@@ -69,7 +73,19 @@ function ShapeScooter(){
             color: this.randomColor(),
             id: socketId,
             user: userName,
+            bullets: [],
         }
+    }
+    
+    this.newProjectile = function(socketId){
+        this.state.player[socketId].bullets.push({
+                x: this.state.player[socketId].x,
+                y: this.state.player[socketId].y,
+                width: 5,
+                height: 1,
+                color: this.state.player[socketId].color,
+                id: socketId,
+        })
     }
 
     this.removePlayer = function(socketId){
@@ -83,7 +99,7 @@ function ShapeScooter(){
 
 
       
-    this.update = function(input, id){
+    this.updatePlayerPosition = function(input, id){
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
         let player = this.state.player[id];

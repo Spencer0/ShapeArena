@@ -82,14 +82,12 @@ document.addEventListener('DOMContentLoaded', function(){
         this.newKeyInput = false;
         this.newMouseInput = false;
         this.socket = socket;
-        this.input = {
-            mouse: false
-        }
+        this.mouse = false;
         let self = this;
 
 
         this.canvas.onmouseup = function(e){ 
-            self.input.mouse = true;
+            self.mouse = true;
             self.newMouseInput = true;
         };
 
@@ -106,7 +104,14 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         })
 
-        this.submitInput = function(){
+        this.submitKeyboardInput = function(){
+            if(this.keysCurrentlyDown === {}){return;}
+            this.socket.emit('user-input', this.keysCurrentlyDown)
+            this.input = {
+                mouse: false,
+            }
+        }
+        this.submitMouseInput = function(){
             if(this.keysCurrentlyDown === {}){return;}
             this.socket.emit('user-input', this.keysCurrentlyDown)
             this.input = {
