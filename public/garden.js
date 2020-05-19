@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function(){
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
                 let player = state.player[key]
+                if(!player) {return;}
                 this.context.beginPath();
                 this.context.fillStyle = player.color ? player.color : "black";
                 this.context.fillRect(player.x,player.y,player.width,player.height);
