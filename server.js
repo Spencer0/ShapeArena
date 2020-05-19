@@ -38,7 +38,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('error', (e) => {
-        console.log("ERORR", e)
     })
 
     socket.on('keyboard-input', (data) => {
@@ -113,7 +112,6 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-        console.log("enemy")
         this.state.enemies[this.state.enemyCount] = {
             x: 30,
             y: 30,
@@ -185,12 +183,9 @@ function ShapeScooter(){
                     
                     //Check collisions
                     for(playerIdInternal of Object.keys(this.state.player)){
-                        console.log("checking, ", bullet.color, this.state.player[playerIdInternal].color)
                         if(bullet.color !== this.state.player[playerIdInternal].color){
-                            console.log("different ship found, checking colision, ")
 
                             if(this.collides(this.state.player[playerIdInternal], bullet)){
-                                console.log("collision detected, moiving ", this.state.player[playerIdInternal].color)
                                 this.state.player[playerIdInternal].x = 30;
                                 this.state.player[playerIdInternal].y = 30;
                                 this.state.player[playerIdInternal].width = 35;
@@ -236,9 +231,11 @@ function ShapeScooter(){
             enemy.y += 1;
             if(enemy.x >= gameWorldWidth){
                 delete this.state.enemies[enemyId]
+                this.state.player.enemyCount--;
             }
             else if(enemy.y >= gameWorldHeight){
                 delete this.state.enemies[enemyId]
+                this.state.player.enemyCount--;
             }
         }
     

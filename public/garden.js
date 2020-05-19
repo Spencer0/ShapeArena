@@ -35,11 +35,6 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
    
-    document.getElementById("color-link").addEventListener("click", function(e){
-        e.preventDefault();
-        randomTrimColor();
-    })
-
     document.getElementById("new-trim-button").addEventListener("click", function(e){
         e.preventDefault();
         randomTrimColor();
@@ -170,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
             for(key of Object.keys(state.enemies)){
-                console.log("e")
                 let enemy = state.enemies[key]
                 this.context.beginPath();
                 this.context.fillStyle = enemy.color;
