@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function(){
     let activityCounter = document.getElementById("active-number")
     let shapeGame = new squareGame(user, socket)
     pingCheck();
+    randomTrimColor();
     setInterval(pingCheck, 2000)
 
 
@@ -34,7 +35,10 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
    
-
+    document.getElementById("color-link").addEventListener("click", function(e){
+        e.preventDefault();
+        randomTrimColor();
+    })
     document.getElementById("chat-input-form").addEventListener("submit", function(e){
         e.preventDefault()
         socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}))
@@ -68,6 +72,20 @@ document.addEventListener('DOMContentLoaded', function(){
         return li;
     }
 
+    function randomTrimColor(){
+            let letters = '6789ABCDEF';
+            let color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * letters.length)];
+            }
+            console.log("color, ", color)
+            document.getElementById("top-bar").style.backgroundColor = color;
+            document.getElementById("chat").style.backgroundColor = color;
+            document.getElementById("bottom-bar").style.backgroundColor = color;
+
+            return color;
+    }
+
     function squareGame(user, socket){
         this.canvas  = document.getElementById('shape-arena-canvas');
         this.backgroundCanvas = document.getElementById('shape-arena-background-canvas')
@@ -84,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function(){
         this.mouse = {x:0, y:0};
         let self = this;
 
-
+        
         this.canvas.onmouseup = function(e){ 
             self.mouse.x = e.offsetX;
             self.mouse.y = e.offsetY;
@@ -185,14 +203,23 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         this.drawBackground = function(){
+            //Draw weird lines
             for(let i = 0; i < this.backgroundCanvas.width; i += 30){
                 for(let j = 0; j < this.backgroundCanvas.height; j += 50){
                     this.backgroundContext.beginPath();
+                    this.backgroundContext.lineWidth = Math.random();
                     this.backgroundContext.strokeStyle = this.randomColor();
                     this.backgroundContext.rect(i,j,80,60);
                     this.backgroundContext.stroke();
                 }
             }
+
+            //Draw safe zone 
+            this.backgroundContext.beginPath();
+            this.backgroundContext.lineWidth = 5;
+            this.backgroundContext.strokeStyle =  "white";
+            this.backgroundContext.rect(0, 0, 100, 100);
+            this.backgroundContext.stroke();
         }
 
         this.drawBackground();

@@ -1,7 +1,12 @@
 *{
     font-family: sans-serif;
-}
+    
 
+}
+body{
+    background-color: rgb(38, 38, 38);
+    color: white;
+}
 canvas {
     top: 0;
     left: 0;
@@ -12,21 +17,22 @@ canvas {
 }
 #ping-display{
     margin: 0;
-    top:10em; 
-    left: 5em;
+    top:-2em; 
     position: absolute;
 }
 #top-bar{
+    color: black;
     top: 0;
     right: 0;
     position: fixed;
     width: 100%;
     height: auto;
-    background-color: rgba(226, 252, 214, 0.667);
+    background-color: rgba(48, 122, 13, 0.667);
 }
 
 #media-pane{
-    width: 73vw;
+   
+    width: 80vw;
     height: 60vh;
     margin-left: auto;
     margin-right: auto;
@@ -45,6 +51,7 @@ canvas {
     background-color: black;
 }
 #chat{
+    color: black;
     position: absolute;
     top: 0px;
     right: 0px;
@@ -55,6 +62,7 @@ canvas {
 
 
 #bottom-bar{
+    color: black;
     bottom: 0;
     right: 0;
     position: fixed;
