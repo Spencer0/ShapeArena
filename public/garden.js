@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
     
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
-    let trimColors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
+    let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
     const socket = io({ query: "user="+user })
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
@@ -136,6 +136,27 @@ document.addEventListener('DOMContentLoaded', function(){
                     this.updateCamera(player.x, player.y);
                 }
                 for(bulletId of Object.keys(player.bullets)){
+                    let bullet = player.bullets[bulletId]
+                    this.context.beginPath();
+                    this.context.arc(bullet.x, bullet.y, bullet.width, 0, 2 * Math.PI, false);
+                    this.context.fill();
+                    this.context.lineWidth = 5;
+                    this.context.strokeStyle = player.color;
+                    this.context.stroke();
+                }
+            }
+            for(key of Object.keys(state.enemies)){
+                console.log("e")
+                let enemy = state.enemies[key]
+                this.context.beginPath();
+                this.context.fillStyle = enemy.color;
+                this.context.fillRect(enemy.x,enemy.y,enemy.width,enemy.height);
+                this.context.stroke();
+                this.context.font = "16px sans sherif";
+                this.context.strokeStyle = "white";
+                this.context.fillStyle = "white";
+                this.context.fillText(enemy.user, enemy.x , enemy.y + enemy.height + 10 );
+                for(bulletId of Object.keys(enemy.bullets)){
                     let bullet = player.bullets[bulletId]
                     this.context.beginPath();
                     this.context.arc(bullet.x, bullet.y, bullet.width, 0, 2 * Math.PI, false);

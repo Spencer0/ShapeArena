@@ -65,7 +65,9 @@ function ShapeScooter(){
 
     this.state = {
         player: {},
+        enemies: {},
         shooting: false,
+        enemyCount: 0,
     }
 
     
@@ -82,12 +84,14 @@ function ShapeScooter(){
             user: userName,
             bullets: {},
             bulletCount: 0,
+            bulletIncId: 0,
         }
     }
     
     this.newProjectile = function(mouse, socketId){
         let bulletsPlayer = this.state.player[socketId]
-        bulletsPlayer.bullets[bulletsPlayer.bulletCount] = {
+        if(bulletsPlayer.bulletCount >= 10) { return }
+        bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
                 x: this.state.player[socketId].x,
                 y: this.state.player[socketId].y,
                 width: 5,
@@ -98,10 +102,27 @@ function ShapeScooter(){
                 lifespan: 100,
                 currentLife: 100,
                 color: this.state.player[socketId].color,
-                id: bulletsPlayer.bulletCount,
+                id: bulletsPlayer.bulletIncId,
         }
         bulletsPlayer.bulletCount++;
+        bulletsPlayer.bulletIncId++;
         this.shooting = true;
+    }
+
+    this.newEnemy = function(){
+        console.log("enemy")
+        this.state.enemies[this.state.enemyCount] = {
+            x: 30,
+            y: 30,
+            width: 50,
+            height: 50,
+            color: "black",
+            user: "void",
+            bullets: {},
+            bulletCount: 0,
+            life: 15,
+        }
+        this.state.enemyCount++;
     }
 
     this.removePlayer = function(socketId){
@@ -152,15 +173,50 @@ function ShapeScooter(){
                     bullet.currentLife--
                     if(bullet.currentLife <= 0){
                         delete this.state.player[playerId].bullets[bullet.id]
+                        this.state.player[playerId].bulletCount--;
                         continue;
                     }
 
                     //If it does, move it forward 
                     this.updateBulletPosition(bullet)
+                    
+                    //Check collisions
+                    for(playerIdInternal of Object.keys(this.state.player)){
+                        console.log("checking, ", bullet.color, this.state.player[playerIdInternal].color)
+                        if(bullet.color !== this.state.player[playerIdInternal].color){
+                            console.log("different ship found, checking colision, ")
+
+                            if(this.collides(this.state.player[playerId], bullet)){
+                                console.log("collision detected, moiving ", this.state.player[playerIdInternal].color)
+                                this.state.player[playerId].x = 30;
+                                this.state.player[playerId].y = 30;
+                                io.sockets.emit('state', this.state);
+                            }
+                        }
+                    }
+                    for(enemyId of Object.keys(this.state.enemies)){
+                        if(this.collides(this.state.enemies[enemyId], bullet)){
+                            if(this.state.enemies[enemyId].life === 0){
+                                delete this.state.enemies[enemyId] 
+                            }else{
+                                this.state.enemies[enemyId].life--;
+                            }
+                            bullet.currentLife = 0;
+                        }
+                        
+                    }
                 }
             }
-        
     }
+
+    this.updateEnemyPositions = function(){
+        for(enemyId of Object.keys(this.state.enemies)){
+            let enemy = this.state.enemies[enemyId];
+            enemy.x += 1;
+            enemy.y += 1;
+        }
+    
+}
     
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x
@@ -169,10 +225,24 @@ function ShapeScooter(){
         bullet.y += yMovement  / bullet.lifespan;
     }
 
+    this.collides = function(enemy,bullet){
+        if(bullet.x >= enemy.x && bullet.x <= enemy.x + enemy.width ){
+            if(bullet.y >= enemy.y && bullet.y <= enemy.y + enemy.height){
+                return true;
+            }
+        }
+        return false;
+    }
     
+    setInterval(() => {
+        if(this.state.enemyCount < 10){
+            this.newEnemy();
+        }
+    }, 10000);
 
     setInterval(() => {
             this.updateProjectilePositions();
+            this.updateEnemyPositions();
             io.sockets.emit('state', this.state);
     }, 1000 / 60);
 }
