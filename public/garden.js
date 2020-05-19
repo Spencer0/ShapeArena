@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function(){
             document.getElementById("top-bar").style.backgroundColor = color;
             document.getElementById("chat").style.backgroundColor = color;
             document.getElementById("bottom-bar").style.backgroundColor = color;
+            document.getElementById("tint-btn-icon").style.color = color;
 
             return color;
     }
