@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 this.context.font = "16px sans sherif";
                 this.context.strokeStyle = "white";
                 this.context.fillStyle = "white";
-                this.context.fillText(player.user, player.x , player.y + player.height + 10 );
+                this.context.fillText(player.user + "("+ player.level + ")", player.x , player.y + player.height + 15 );
                 if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
                 }

@@ -85,6 +85,9 @@ function ShapeScooter(){
             bullets: {},
             bulletCount: 0,
             bulletIncId: 0,
+            bulletRadius: 5,
+            bulletLifespan: 100,
+            level: 1,
         }
     }
     
@@ -94,13 +97,13 @@ function ShapeScooter(){
         bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
                 x: this.state.player[socketId].x,
                 y: this.state.player[socketId].y,
-                width: 5,
+                width: this.state.player[socketId].bulletRadius,
                 height: 1,
                 direction: { x: mouse.x, 
                              y: mouse.y, 
                 },
-                lifespan: 100,
-                currentLife: 100,
+                lifespan: this.state.player[socketId].bulletLifespan,
+                currentLife: this.state.player[socketId].bulletLifespan,
                 color: this.state.player[socketId].color,
                 id: bulletsPlayer.bulletIncId,
         }
@@ -192,6 +195,14 @@ function ShapeScooter(){
                                 this.state.player[playerIdInternal].y = 30;
                                 this.state.player[playerIdInternal].width = 35;
                                 this.state.player[playerIdInternal].height = 20;
+                                this.state.player[playerIdInternal].bulletRadius = 5;
+                                this.state.player[playerIdInternal].bulletLifespan = 100;
+                                this.state.player[playerIdInternal].level = 1;
+                                this.state.player[playerId].width += 6;
+                                this.state.player[playerId].height += 2;
+                                this.state.player[playerId].bulletRadius += 0.4;
+                                this.state.player[playerId].bulletLifespan -= 6;
+                                this.state.player[playerId].level += 2;
                                 io.sockets.emit('state', this.state);
                             }
                         }
@@ -200,12 +211,16 @@ function ShapeScooter(){
                         if(this.collides(this.state.enemies[enemyId], bullet)){
                             if(this.state.enemies[enemyId].life === 0){
                                 delete this.state.enemies[enemyId] 
+                                this.state.player[playerId].width += 3;
+                                this.state.player[playerId].height += 1;
+                                this.state.player[playerId].bulletRadius += 0.2;
+                                this.state.player[playerId].bulletLifespan -= 3;
+                                this.state.player[playerId].level += 1;
                             }else{
                                 this.state.enemies[enemyId].life--;
                             }
                             bullet.currentLife = 0;
-                            this.state.player[playerId].width += 1;
-                            this.state.player[playerId].height += 1;
+                           
                         }
                         
                     }
@@ -218,6 +233,12 @@ function ShapeScooter(){
             let enemy = this.state.enemies[enemyId];
             enemy.x += 1;
             enemy.y += 1;
+            if(enemy.x >= gameWorldWidth){
+                delete this.state.enemies[enemyId]
+            }
+            else if(enemy.y >= gameWorldHeight){
+                delete this.state.enemies[enemyId]
+            }
         }
     
 }
@@ -225,8 +246,8 @@ function ShapeScooter(){
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x
         let yMovement = bullet.direction.y - bullet.y 
-        bullet.x += xMovement / bullet.lifespan;
-        bullet.y += yMovement  / bullet.lifespan;
+        bullet.x += xMovement * (1 / bullet.lifespan);
+        bullet.y += yMovement  * (1 / bullet.lifespan);
     }
 
     this.collides = function(enemy,bullet){
