@@ -1,30 +1,30 @@
 document.addEventListener('DOMContentLoaded', function(){
     
-    let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
-    let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink']
+    let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe'];
+    let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink'];
     let user = userNames[Math.floor(Math.random() * userNames.length)];
-    const socket = io({ query: "user="+user })
+    const socket = io({ query: "user="+user });
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
-    let userInput = document.getElementById("chat-input")
-    let activityCounter = document.getElementById("active-number")
-    let shapeGame = new squareGame(user, socket)
+    let userInput = document.getElementById("chat-input");
+    let activityCounter = document.getElementById("active-number");
+    let shapeGame = new squareGame(user, socket);
     pingCheck();
     randomTrimColor();
     setInterval(pingCheck, 2000)
 
 
     socket.on("connection-event", function(msg){
-        console.log("Friends appearing! Active users: ", msg)
+        console.log("Friends appearing! Active users: ", msg);
         activityCounter.innerText = msg;
     })
 
     socket.on("message-event", function(msg){
         newChatMessageEvent(JSON.parse(msg));
-        scrollChatDiv()
+        scrollChatDiv();
     })
 
     socket.on('state', function (state) {
-        shapeGame.drawState(state)
+        shapeGame.drawState(state);
     })
 
     function pingCheck(){
@@ -34,19 +34,19 @@ document.addEventListener('DOMContentLoaded', function(){
             document.getElementById("ping-display").innerText = "Ping: " + latency; 
         });
     }
-   
+
     document.getElementById("new-trim-button").addEventListener("click", function(e){
         e.preventDefault();
         randomTrimColor();
     })
     document.getElementById("chat-input-form").addEventListener("submit", function(e){
-        e.preventDefault()
-        socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}))
-        userInput.value = ""
+        e.preventDefault();
+        socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}));
+        userInput.value = "";
     })
 
     document.getElementById("chat-input") .addEventListener("click", function(event) { 
-        event.preventDefault() 
+        event.preventDefault() ;
     });
 
     document.getElementById("user-menu").innerText = user;
@@ -225,5 +225,5 @@ document.addEventListener('DOMContentLoaded', function(){
 
         this.drawBackground();
     }
-    
+
 });
