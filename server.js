@@ -33,8 +33,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('message-event', (msg) => {
-      console.log("Message broadcasting"  )
-      io.emit('message-event', msg);
+        console.log("Message broadcasting"  )
+        io.emit('message-event', msg);
     });
 
     socket.on('error', (e) => {
@@ -54,7 +54,6 @@ io.on('connection', (socket) => {
 
 });
 
-
 http.listen(port, () => {
     console.log('Garden Server, Port: ', port);
 });
@@ -68,8 +67,6 @@ function ShapeScooter(){
         shooting: false,
         enemyCount: 0,
     }
-
-    
 
     this.newPlayer = function(socketId, userName){
         if(!userName){return}
@@ -98,8 +95,9 @@ function ShapeScooter(){
                 y: this.state.player[socketId].y,
                 width: this.state.player[socketId].bulletRadius,
                 height: 1,
-                direction: { x: mouse.x, 
-                             y: mouse.y, 
+                direction: { 
+                    x: mouse.x, 
+                    y: mouse.y, 
                 },
                 lifespan: this.state.player[socketId].bulletLifespan,
                 currentLife: this.state.player[socketId].bulletLifespan,
@@ -136,7 +134,6 @@ function ShapeScooter(){
     }
 
 
-      
     this.updatePlayerPosition = function(input, id){
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
@@ -185,20 +182,9 @@ function ShapeScooter(){
                     //Check collisions
                     for(playerIdInternal of Object.keys(this.state.player)){
                         if(bullet.color !== this.state.player[playerIdInternal].color){
-
                             if(this.collides(this.state.player[playerIdInternal], bullet)){
-                                this.state.player[playerIdInternal].x = 30;
-                                this.state.player[playerIdInternal].y = 30;
-                                this.state.player[playerIdInternal].width = 35;
-                                this.state.player[playerIdInternal].height = 20;
-                                this.state.player[playerIdInternal].bulletRadius = 5;
-                                this.state.player[playerIdInternal].bulletLifespan = 100;
-                                this.state.player[playerIdInternal].level = 1;
-                                this.state.player[playerId].width += 6;
-                                this.state.player[playerId].height += 2;
-                                this.state.player[playerId].bulletRadius += 0.4;
-                                this.state.player[playerId].bulletLifespan -= 6;
-                                this.state.player[playerId].level += 2;
+                                this.respawnPlayer(playerIdInternal);
+                                this.levelUp(playerId, 2);
                                 io.sockets.emit('state', this.state);
                             }
                         }
@@ -208,21 +194,36 @@ function ShapeScooter(){
                             if(this.state.enemies[enemyId].life === 0){
                                 delete this.state.enemies[enemyId] 
                                 this.state.enemyCount--;
-                                this.state.player[playerId].width += 3;
-                                this.state.player[playerId].height += 1;
-                                this.state.player[playerId].bulletRadius += 0.2;
-                                this.state.player[playerId].bulletLifespan -= 3;
-                                this.state.player[playerId].level += 1;
+                                this.levelUp(playerId, 1);
                             }else{
                                 this.state.enemies[enemyId].life--;
                             }
                             bullet.currentLife = 0;
-                           
                         }
-                        
+                        ds
                     }
                 }
             }
+    }
+
+    this.levelUp = function(playerId, levels) {
+        for(let i = 0; i < levels; i++) {
+            this.state.player[playerId].width *= 1.1;
+            this.state.player[playerId].height *= 1.1;
+            this.state.player[playerId].bulletRadius += 0.2;
+            this.state.player[playerId].bulletLifespan *= .9;
+            this.state.player[playerId].level += 1;
+        }
+    }
+    
+    this.respawnPlayer = function( playerId ) {
+        this.state.player[playerId].x = 30;
+        this.state.player[playerId].y = 30;
+        this.state.player[playerId].width = 35;
+        this.state.player[playerId].height = 20;
+        this.state.player[playerId].bulletRadius = 5;
+        this.state.player[playerId].bulletLifespan = 100;
+        this.state.player[playerId].level = 1;
     }
 
     this.updateEnemyPositions = function(){
