@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
     
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe']
-    let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
+    let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink']
     let user = userNames[Math.floor(Math.random() * userNames.length)];
     const socket = io({ query: "user="+user })
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];

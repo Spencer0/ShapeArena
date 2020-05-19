@@ -186,10 +186,12 @@ function ShapeScooter(){
                         if(bullet.color !== this.state.player[playerIdInternal].color){
                             console.log("different ship found, checking colision, ")
 
-                            if(this.collides(this.state.player[playerId], bullet)){
+                            if(this.collides(this.state.player[playerIdInternal], bullet)){
                                 console.log("collision detected, moiving ", this.state.player[playerIdInternal].color)
-                                this.state.player[playerId].x = 30;
-                                this.state.player[playerId].y = 30;
+                                this.state.player[playerIdInternal].x = 30;
+                                this.state.player[playerIdInternal].y = 30;
+                                this.state.player[playerIdInternal].width = 35;
+                                this.state.player[playerIdInternal].height = 20;
                                 io.sockets.emit('state', this.state);
                             }
                         }
@@ -202,6 +204,8 @@ function ShapeScooter(){
                                 this.state.enemies[enemyId].life--;
                             }
                             bullet.currentLife = 0;
+                            this.state.player[playerId].width += 1;
+                            this.state.player[playerId].height += 1;
                         }
                         
                     }
