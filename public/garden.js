@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function(){
         let ping = Date.now()
         socket.emit('latency', function () {
             latency = Date.now() - ping;
-            console.log(latency);
             document.getElementById("ping-display").innerText = "Ping: " + latency; 
         });
     }
@@ -80,15 +79,16 @@ document.addEventListener('DOMContentLoaded', function(){
         this.context = this.canvas.getContext('2d');
         this.keysCurrentlyDown = {};
         this.newKeyInput = false;
-        this.newMouseInput = false;
         this.socket = socket;
-        this.mouse = false;
+        this.clicked = false;
+        this.mouse = {x:0, y:0};
         let self = this;
 
 
         this.canvas.onmouseup = function(e){ 
-            self.mouse = true;
-            self.newMouseInput = true;
+            self.mouse.x = e.offsetX;
+            self.mouse.y = e.offsetY;
+            self.clicked = true;
         };
 
         this.canvas.addEventListener("keydown", function(e){
@@ -99,24 +99,20 @@ document.addEventListener('DOMContentLoaded', function(){
         this.canvas.addEventListener("keyup", function(e){
             delete self.keysCurrentlyDown[e.key]
             if(Object.keys(self.keysCurrentlyDown).length === 0){
-                console.log("stopping inputs")
                 self.newKeyInput = false;
             }
         })
 
         this.submitKeyboardInput = function(){
             if(this.keysCurrentlyDown === {}){return;}
-            this.socket.emit('user-input', this.keysCurrentlyDown)
-            this.input = {
-                mouse: false,
-            }
+            this.socket.emit('keyboard-input', this.keysCurrentlyDown)
+            
         }
+
         this.submitMouseInput = function(){
-            if(this.keysCurrentlyDown === {}){return;}
-            this.socket.emit('user-input', this.keysCurrentlyDown)
-            this.input = {
-                mouse: false,
-            }
+            if(!this.clicked){return;}
+            this.socket.emit('mouse-input', this.mouse)
+            this.clicked = false
         }
 
         this.updateCamera = function(x,y){
@@ -136,18 +132,25 @@ document.addEventListener('DOMContentLoaded', function(){
                 this.context.strokeStyle = "white";
                 this.context.fillStyle = "white";
                 this.context.fillText(player.user, player.x , player.y + player.height + 10 );
-                //if its US we are drawing, move camera
-
                 if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
                 }
+                for(bulletId of Object.keys(player.bullets)){
+                    let bullet = player.bullets[bulletId]
+                    this.context.beginPath();
+                    this.context.arc(bullet.x, bullet.y, bullet.width, 0, 2 * Math.PI, false);
+                    this.context.fill();
+                    this.context.lineWidth = 5;
+                    this.context.strokeStyle = player.color;
+                    this.context.stroke();
+                }
             }
-            if(this.newMouseInput){
-                this.submitInput();
+            if(this.clicked){
+                this.submitMouseInput();
                 this.newMouseInput = false;
             }
             if(this.newKeyInput){
-                this.submitInput();
+                this.submitKeyboardInput();
             }
         }
 

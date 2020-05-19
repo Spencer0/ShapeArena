@@ -41,9 +41,13 @@ io.on('connection', (socket) => {
         console.log("ERORR", e)
     })
 
-    socket.on('user-input', (data) => {
+    socket.on('keyboard-input', (data) => {
         shapescooter.updatePlayerPosition(data, socket.id)
-      });
+    });
+
+    socket.on('mouse-input', (data) => {
+        shapescooter.newProjectile(data, socket.id)
+    });
 
     socket.on('latency', function (fn) {
         fn();
@@ -60,8 +64,11 @@ http.listen(port, () => {
 function ShapeScooter(){
 
     this.state = {
-        player: {}
+        player: {},
+        shooting: false,
     }
+
+    
 
     this.newPlayer = function(socketId, userName){
         if(!userName){return}
@@ -73,19 +80,28 @@ function ShapeScooter(){
             color: this.randomColor(),
             id: socketId,
             user: userName,
-            bullets: [],
+            bullets: {},
+            bulletCount: 0,
         }
     }
     
-    this.newProjectile = function(socketId){
-        this.state.player[socketId].bullets.push({
+    this.newProjectile = function(mouse, socketId){
+        let bulletsPlayer = this.state.player[socketId]
+        bulletsPlayer.bullets[bulletsPlayer.bulletCount] = {
                 x: this.state.player[socketId].x,
                 y: this.state.player[socketId].y,
                 width: 5,
                 height: 1,
+                direction: { x: mouse.x, 
+                             y: mouse.y, 
+                },
+                lifespan: 100,
+                currentLife: 100,
                 color: this.state.player[socketId].color,
-                id: socketId,
-        })
+                id: bulletsPlayer.bulletCount,
+        }
+        bulletsPlayer.bulletCount++;
+        this.shooting = true;
     }
 
     this.removePlayer = function(socketId){
@@ -126,7 +142,37 @@ function ShapeScooter(){
             }
         }
     }
+
+    this.updateProjectilePositions = function(){
+            for(playerId of Object.keys(this.state.player)){
+                let bullets = this.state.player[playerId].bullets;
+                for(bulletId of Object.keys(bullets)){
+                    let bullet = bullets[bulletId];
+                    //See if it has any life left in it
+                    bullet.currentLife--
+                    if(bullet.currentLife <= 0){
+                        delete this.state.player[playerId].bullets[bullet.id]
+                        continue;
+                    }
+
+                    //If it does, move it forward 
+                    this.updateBulletPosition(bullet)
+                }
+            }
+        
+    }
+    
+    this.updateBulletPosition = function(bullet){
+        let xMovement = bullet.direction.x - bullet.x
+        let yMovement = bullet.direction.y - bullet.y 
+        bullet.x += xMovement / bullet.lifespan;
+        bullet.y += yMovement  / bullet.lifespan;
+    }
+
+    
+
     setInterval(() => {
+            this.updateProjectilePositions();
             io.sockets.emit('state', this.state);
     }, 1000 / 60);
 }
