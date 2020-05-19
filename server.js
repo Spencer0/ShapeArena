@@ -168,6 +168,7 @@ function ShapeScooter(){
     this.updateProjectilePositions = function(){
             for(playerId of Object.keys(this.state.player)){
                 let bullets = this.state.player[playerId].bullets;
+                if(!bullets) { return }
                 for(bulletId of Object.keys(bullets)){
                     let bullet = bullets[bulletId];
                     //See if it has any life left in it
