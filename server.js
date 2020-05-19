@@ -102,7 +102,7 @@ function ShapeScooter(){
                     player.y += 10;
                     break;
                 case "d":
-                    if(player.x >= gameWorldHeight - canvasPadding){ continue }
+                    if(player.x >= gameWorldWidth - canvasPadding){ continue }
                     player.x += 10;
                     break;
                 default:
