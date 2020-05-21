@@ -4,7 +4,8 @@
   "description": "Todays Garden",
   "main": "server.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+	"start": "node src\\server.js"
   },
   "author": "spencer",
   "license": "ISC",
