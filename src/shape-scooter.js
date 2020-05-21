@@ -1,6 +1,7 @@
 const gameWorldHeight = 6000;
 const gameWorldWidth = 8000;
 const canvasPadding = 25;
+const enemyFactory = require('./enemy/enemy-factory');
 
 function ShapeScooter(){
 
@@ -32,20 +33,20 @@ function ShapeScooter(){
     }
     
     this.newProjectile = function(mouse, socketId){
-        let bulletsPlayer = this.state.player[socketId]
+        let bulletsPlayer = this.state.player[socketId];
         if(bulletsPlayer.bulletCount >= 10) { return }
         bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
-                x: this.state.player[socketId].x,
-                y: this.state.player[socketId].y,
-                width: this.state.player[socketId].bulletRadius,
+                x: bulletsPlayer.x,
+                y: bulletsPlayer.y,
+                width: bulletsPlayer.bulletRadius,
                 height: 1,
                 direction: { 
                     x: mouse.x, 
                     y: mouse.y, 
                 },
-                lifespan: this.state.player[socketId].bulletLifespan,
-                currentLife: this.state.player[socketId].bulletLifespan,
-                color: this.state.player[socketId].color,
+                lifespan: bulletsPlayer.bulletLifespan,
+                currentLife: bulletsPlayer.bulletLifespan,
+                color: bulletsPlayer.color,
                 id: bulletsPlayer.bulletIncId,
         }
         bulletsPlayer.bulletCount++;
@@ -54,17 +55,7 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-        this.state.enemies[this.state.enemyCount] = {
-            x: 30,
-            y: 30,
-            width: 50,
-            height: 50,
-            color: "black",
-            user: "void",
-            bullets: {},
-            bulletCount: 0,
-            life: 15,
-        }
+        this.state.enemies[this.state.enemyCount] = enemyFactory('Black', 1);
         this.state.enemyCount++;
     }
 
@@ -150,23 +141,25 @@ function ShapeScooter(){
     }
 
     this.levelUp = function(playerId, levels) {
+        let player = this.state.player[playerId];
         for(let i = 0; i < levels; i++) {
-            this.state.player[playerId].width *= 1.1;
-            this.state.player[playerId].height *= 1.1;
-            this.state.player[playerId].bulletRadius += 0.2;
-            this.state.player[playerId].bulletLifespan *= .9;
-            this.state.player[playerId].level += 1;
+            player.width *= 1.1;
+            player.height *= 1.1;
+            player.bulletRadius += 0.2;
+            player.bulletLifespan *= .9;
+            player.level += 1;
         }
     }
     
     this.respawnPlayer = function( playerId ) {
-        this.state.player[playerId].x = 30;
-        this.state.player[playerId].y = 30;
-        this.state.player[playerId].width = 35;
-        this.state.player[playerId].height = 20;
-        this.state.player[playerId].bulletRadius = 5;
-        this.state.player[playerId].bulletLifespan = 100;
-        this.state.player[playerId].level = 1;
+        let player = this.state.player[playerId];
+        player.x = 30;
+        player.y = 30;
+        player.width = 35;
+        player.height = 20;
+        player.bulletRadius = 5;
+        player.bulletLifespan = 300;
+        player.level = 1; 
     }
 
     this.updateEnemyPositions = function(){
@@ -183,8 +176,7 @@ function ShapeScooter(){
                 this.state.player.enemyCount--;
             }
         }
-    
-}
+    }
     
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x

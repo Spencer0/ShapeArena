@@ -1,5 +1,5 @@
 const express = require('express');
-const ShapeScooter = require('./src/shape-scooter');
+const ShapeScooter = require('./shape-scooter');
 const app = express();
 var http = require('http').createServer(app);
 const port = process.env.PORT || 3000
