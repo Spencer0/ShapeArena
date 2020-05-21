@@ -124,6 +124,7 @@ function ShapeScooter(){
                             }
                         }
                     }
+                    
                     for(enemyId of Object.keys(this.state.enemies)){
                         if(this.collides(this.state.enemies[enemyId], bullet)){
                             if(this.state.enemies[enemyId].life === 0){
