@@ -171,7 +171,7 @@ function ShapeScooter(){
             let enemy = this.state.enemies[enemyId];
             enemy.x += 1;
             enemy.y += 1;
-            if(enemy.x >= 100 || enemy.y >= 100 ){
+            if(enemy.x >= 2000 || enemy.y >= 2000 ){
                 console.log("removing enemy",this.state.enemyCount)
                 this.state.enemyCount--;
                 console.log("removed enemy",this.state.enemyCount)
