@@ -1,30 +1,29 @@
 (global => {
+
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe'];
     let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink'];
     let user = userNames[Math.floor(Math.random() * userNames.length)];
     const socket = io({ query: "user="+user });
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let shapeGame;
-    let activityCounter = undefined
-    console.log(activityCounter)
+    let activityCounter = undefined;
+    console.log(activityCounter);
     setInterval(pingCheck, 1000);
-   
     
     socket.on("connection-event", function(msg){
         console.log("Friends appearing! Active users: ", msg);
         if(activityCounter) activityCounter.innerText = msg;
-    })
+    });
 
     socket.on("message-event", function(msg){
         newChatMessageEvent(JSON.parse(msg));
         scrollChatDiv();
-    })
+    });
 
     socket.on('state', function (state) {
         shapeGame.drawState(state);
-    })
+    });
 
-   
     document.addEventListener('DOMContentLoaded', function(){
         
         let userInput = document.getElementById("chat-input");
@@ -67,7 +66,6 @@
     
     });
 
-
     function pingCheck(){
         let ping = Date.now()
         socket.emit('latency', function () {
@@ -75,7 +73,6 @@
             document.getElementById("ping-display").innerText = "Ping: " + latency; 
         });
     }
-
 
     function scrollChatDiv(){
         var div = document.getElementById("chat-display");
@@ -153,6 +150,7 @@
         }
 
         this.drawState = function(state){
+            console.log('rendering')
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
                 let player = state.player[key]

@@ -172,9 +172,7 @@ function ShapeScooter(){
             enemy.x += 1;
             enemy.y += 1;
             if(enemy.x >= 2000 || enemy.y >= 2000 ){
-                console.log("removing enemy",this.state.enemyCount)
                 this.state.enemyCount--;
-                console.log("removed enemy",this.state.enemyCount)
                 delete this.state.enemies[enemyId]
             }
         }
@@ -200,7 +198,6 @@ function ShapeScooter(){
     }
 
     setInterval(() => {
-        console.log(this.state.enemyCount)
         if(Object.keys(this.state.player).length !== 0){
             
             if(this.state.enemyCount < 10){
