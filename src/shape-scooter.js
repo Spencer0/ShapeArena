@@ -10,6 +10,7 @@ function ShapeScooter(){
         enemies: {},
         shooting: false,
         enemyCount: 0,
+		enemyIncId: 0,
         activeUsers: 0
     }
 
@@ -55,8 +56,10 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-        this.state.enemies[this.state.enemyCount] = enemyFactory('Black', 1);
+		//
+        this.state.enemies[this.state.enemyIncId] = enemyFactory('Black', 1);
         this.state.enemyCount++;
+		this.state.enemyIncId++;
     }
 
     this.removePlayer = function(socketId){
@@ -168,13 +171,11 @@ function ShapeScooter(){
             let enemy = this.state.enemies[enemyId];
             enemy.x += 1;
             enemy.y += 1;
-            if(enemy.x >= gameWorldWidth){
+            if(enemy.x >= 100 || enemy.y >= 100 ){
+                console.log("removing enemy",this.state.enemyCount)
+                this.state.enemyCount--;
+                console.log("removed enemy",this.state.enemyCount)
                 delete this.state.enemies[enemyId]
-                this.state.player.enemyCount--;
-            }
-            else if(enemy.y >= gameWorldHeight){
-                delete this.state.enemies[enemyId]
-                this.state.player.enemyCount--;
             }
         }
     }
@@ -197,6 +198,16 @@ function ShapeScooter(){
         }
         return false;
     }
+
+    setInterval(() => {
+        console.log(this.state.enemyCount)
+        if(Object.keys(this.state.player).length !== 0){
+            
+            if(this.state.enemyCount < 10){
+                this.newEnemy();
+            }
+        }
+    }, 1000);
 }
 
 module.exports = ShapeScooter;

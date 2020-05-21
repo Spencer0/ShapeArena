@@ -58,11 +58,7 @@ io.on('connection', (socket) => {
         io.sockets.emit('state', shapescooter.state);
     }, 1000 / 60);
 
-    setInterval(() => {
-        if(shapescooter.state.enemyCount < 10){
-            shapescooter.newEnemy();
-        }
-    }, 10000);
+    
 
 });
 

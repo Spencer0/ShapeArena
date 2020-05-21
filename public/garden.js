@@ -1,21 +1,18 @@
-document.addEventListener('DOMContentLoaded', function(){
-    
+(global => {
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe'];
     let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink'];
     let user = userNames[Math.floor(Math.random() * userNames.length)];
     const socket = io({ query: "user="+user });
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
-    let userInput = document.getElementById("chat-input");
-    let activityCounter = document.getElementById("active-number");
-    let shapeGame = new squareGame(user, socket);
-    pingCheck();
-    randomTrimColor();
-    setInterval(pingCheck, 2000)
-
-
+    let shapeGame;
+    let activityCounter = undefined
+    console.log(activityCounter)
+    setInterval(pingCheck, 1000);
+   
+    
     socket.on("connection-event", function(msg){
         console.log("Friends appearing! Active users: ", msg);
-        activityCounter.innerText = msg;
+        if(activityCounter) activityCounter.innerText = msg;
     })
 
     socket.on("message-event", function(msg){
@@ -27,6 +24,50 @@ document.addEventListener('DOMContentLoaded', function(){
         shapeGame.drawState(state);
     })
 
+   
+    document.addEventListener('DOMContentLoaded', function(){
+        
+        let userInput = document.getElementById("chat-input");
+        activityCounter = document.getElementById("active-number");
+        //Wait for the dom to load before loading game
+        if(!shapeGame) shapeGame= new squareGame(user, socket);
+        randomTrimColor();
+
+        document.getElementById("new-trim-button").addEventListener("click", function(e){
+            e.preventDefault();
+            randomTrimColor();
+        });
+
+        document.getElementById("chat-input-form").addEventListener("submit", function(e){
+            e.preventDefault();
+            socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}));
+            userInput.value = "";
+        });
+    
+        document.getElementById("chat-input") .addEventListener("click", function(event) { 
+            event.preventDefault() ;
+        });
+    
+        document.getElementById("user-menu").innerText = user;
+      
+        function randomTrimColor(){
+                let letters = '6789ABCDEF';
+                let color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * letters.length)];
+                }
+                console.log("color, ", color)
+                document.getElementById("top-bar").style.backgroundColor = color;
+                document.getElementById("chat").style.backgroundColor = color;
+                document.getElementById("bottom-bar").style.backgroundColor = color;
+                document.getElementById("tint-btn-icon").style.color = color;
+    
+                return color;
+        }
+    
+    });
+
+
     function pingCheck(){
         let ping = Date.now()
         socket.emit('latency', function () {
@@ -35,25 +76,12 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
 
-    document.getElementById("new-trim-button").addEventListener("click", function(e){
-        e.preventDefault();
-        randomTrimColor();
-    })
-    document.getElementById("chat-input-form").addEventListener("submit", function(e){
-        e.preventDefault();
-        socket.emit('message-event', JSON.stringify({"user": user, "value":userInput.value}));
-        userInput.value = "";
-    })
 
-    document.getElementById("chat-input") .addEventListener("click", function(event) { 
-        event.preventDefault() ;
-    });
-
-    document.getElementById("user-menu").innerText = user;
     function scrollChatDiv(){
         var div = document.getElementById("chat-display");
-        div.scrollTop = div.scrollHeight - div.clientHeight;
+        if(div) div.scrollTop = div.scrollHeight - div.clientHeight;
     }
+
     function newChatMessageEvent(msg){
         let li = document.createElement('li');
         li.classList.add("user-chat-item");
@@ -70,21 +98,6 @@ document.addEventListener('DOMContentLoaded', function(){
         li.appendChild(userMessageContentSpan);
         document.getElementById('message-list').appendChild(li);
         return li;
-    }
-
-    function randomTrimColor(){
-            let letters = '6789ABCDEF';
-            let color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * letters.length)];
-            }
-            console.log("color, ", color)
-            document.getElementById("top-bar").style.backgroundColor = color;
-            document.getElementById("chat").style.backgroundColor = color;
-            document.getElementById("bottom-bar").style.backgroundColor = color;
-            document.getElementById("tint-btn-icon").style.color = color;
-
-            return color;
     }
 
     function squareGame(user, socket){
@@ -226,4 +239,4 @@ document.addEventListener('DOMContentLoaded', function(){
         this.drawBackground();
     }
 
-});
+})(window)
