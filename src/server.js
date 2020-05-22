@@ -50,17 +50,13 @@ io.on('connection', (socket) => {
         fn();
     }); 
 
-    
-
-    setInterval(() => {
-        shapescooter.updateProjectilePositions();
-        shapescooter.updateEnemyPositions();
-        io.sockets.emit('state', shapescooter.state);
-    }, 1000 / 60);
-
-    
-
 });
+
+setInterval(() => {
+    shapescooter.updateProjectilePositions();
+    shapescooter.updateEnemyPositions();
+    io.sockets.emit('state', shapescooter.state);
+}, 1000 / 60);
 
 http.listen(port, () => {
     console.log('Garden Server, Port: ', port);
