@@ -3,35 +3,27 @@
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe'];
     let trimColors = ['red', 'white', 'orange', 'blue', 'yellow', 'navyblue', 'purple', 'pink'];
     let user = userNames[Math.floor(Math.random() * userNames.length)];
-    const socket = io({ query: "user="+user });
+    let socket;
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let shapeGame;
     let activityCounter = undefined;
     console.log(activityCounter);
-    setInterval(pingCheck, 1000);
-    
-    socket.on("connection-event", function(msg){
-        console.log("Friends appearing! Active users: ", msg);
-        if(activityCounter) activityCounter.innerText = msg;
-    });
 
-    socket.on("message-event", function(msg){
-        newChatMessageEvent(JSON.parse(msg));
-        scrollChatDiv();
-    });
 
-    socket.on('state', function (state) {
-        shapeGame.drawState(state);
-    });
-
+        
     document.addEventListener('DOMContentLoaded', function(){
         
+
         let userInput = document.getElementById("chat-input");
         activityCounter = document.getElementById("active-number");
+
+        //Set login to display itself 
+        document.getElementById("media-pane").style.display = "none";
+
         //Wait for the dom to load before loading game
-        if(!shapeGame) shapeGame= new squareGame(user, socket);
         randomTrimColor();
 
+        
         document.getElementById("new-trim-button").addEventListener("click", function(e){
             e.preventDefault();
             randomTrimColor();
@@ -48,7 +40,13 @@
         });
     
         document.getElementById("user-menu").innerText = user;
-      
+        document.getElementById("guest-btn").onclick = guestLogin;
+        document.getElementById("login-btn").onclick = showLoginDiv;
+        document.getElementById("create-btn").onclick = showRegistrationDiv;
+        document.getElementById("login-submit-btn").onclick = standardLogin;
+        console.log(document.getElementById("login-reset").onclick)
+        document.getElementById("login-reset").onclick = showLoginOptions;
+        console.log(document.getElementById("login-reset").onclick)
         function randomTrimColor(){
                 let letters = '6789ABCDEF';
                 let color = '#';
@@ -63,7 +61,7 @@
     
                 return color;
         }
-    
+
     });
 
     function pingCheck(){
@@ -236,5 +234,93 @@
 
         this.drawBackground();
     }
+            
+    function beginGame(){
+        document.getElementById("media-pane").style.display = "block";
+        document.getElementById("auth-div").style.display = "none";
+        if(!shapeGame) shapeGame= new squareGame(user, socket);
+    }
+    
+    function guestLogin(){
+        console.log(document.getElementById("shape-user").value, 
+                    document.getElementById("shape-pass").value);
+
+        let tryPass = document.getElementById("shape-pass").value;
+        let tryUser = document.getElementById("shape-user").value;
+        fetch('/', { 
+            method: 'post', 
+            headers: new Headers({
+            'Authorization': 'Basic '+btoa('guest:'), 
+            'Content-Type': 'application/x-www-form-urlencoded'
+            }), 
+            body: 'A=1&B=2'
+        }).then(response => response.json())
+        .then(data => processLoginResponse(data));
+    }
+
+    function processLoginResponse(data){
+        console.log(data)
+        socket = io({ query: "user="+user });
+                
+        socket.on("connection-event", function(msg){
+            console.log("Friends appearing! Active users: ", msg);
+            if(activityCounter) activityCounter.innerText = msg;
+        });
+
+        socket.on("message-event", function(msg){
+            newChatMessageEvent(JSON.parse(msg));
+            scrollChatDiv();
+        });
+
+        socket.on('state', function (state) {
+            if(!shapeGame) { return }
+            shapeGame.drawState(state);
+        });
+        
+        setInterval(pingCheck, 1000);
+        beginGame();
+    }
+    
+    function showLoginOptions(){
+        document.getElementById("login-div").style.display = "none";
+        document.getElementById("login-options").style.display = "block";
+        document.getElementById("registration-div").style.display = "none";
+        document.getElementById("login-reset").style.display = "none";
+    }
+
+    function showLoginDiv(){
+        document.getElementById("login-div").style.display = "block";
+        document.getElementById("login-options").style.display = "none";
+        document.getElementById("registration-div").style.display = "none";
+        document.getElementById("login-reset").style.display = "block";
+    }
+
+    function showRegistrationDiv(){
+        document.getElementById("registration-div").style.display = "block";
+        document.getElementById("login-div").style.display = "none";
+        document.getElementById("login-options").style.display = "none";
+        document.getElementById("login-reset").style.display = "block";
+    }
+
+    function standardLogin(){
+        console.log(document.getElementById("shape-user").value, 
+                    document.getElementById("shape-pass").value);
+    
+        let tryPass = document.getElementById("shape-pass").value;
+        let tryUser = document.getElementById("shape-user").value;
+        fetch('/', { 
+            method: 'post', 
+            headers: new Headers({
+              'Authorization': 'Basic '+btoa(tryUser + ":" + tryPass), 
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }), 
+            body: 'A=1&B=2'
+        }).then(response => response.json())
+        .then(data => user = tryUser)
+        .then( x => document.getElementById("user-menu").innerText = user)
+        .then(data => processLoginResponse(data));
+    }
+
+    
 
 })(window)

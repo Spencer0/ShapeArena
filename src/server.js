@@ -18,10 +18,14 @@ app.get('/', (req, res) => {
 })
 
 //User service w/ BasicAuth
-app.get('/user', basicAuth({
-                 users: { 'admin': 'supersecret' }}), 
+app.post('/', basicAuth({
+                 users: { 'admin': 'supersecret',
+                          's': 1,
+                          'guest': '' }}), 
                  (req, res) => {
-    res.send("Authorized");
+
+    res.sendFile(__dirname + '/index.html');
+    res.send(JSON.stringify({authstatus: true}));
 })
 
 

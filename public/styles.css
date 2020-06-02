@@ -7,6 +7,22 @@ body{
     background-color: rgb(38, 38, 38);
     color: white;
 }
+
+#auth-div{
+    width: 40em;
+    margin-top: 18vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#registration-div{
+    display: none;
+}
+
+#login-div{
+    display: none;
+}
+
 canvas {
     top: 0;
     left: 0;
