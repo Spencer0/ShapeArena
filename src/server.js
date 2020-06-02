@@ -2,19 +2,28 @@ const express = require('express');
 const ShapeScooter = require('./shape-scooter');
 const app = express();
 var http = require('http').createServer(app);
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 const io = require('socket.io')(http);
-
+const basicAuth = require('express-basic-auth');
 const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
 
 //Serve static 
 app.use(express.static('public'))
 
+
 //Server via server
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 })
+
+//User service w/ BasicAuth
+app.get('/user', basicAuth({
+                 users: { 'admin': 'supersecret' }}), 
+                 (req, res) => {
+    res.send("Authorized");
+})
+
 
 io.on('connection', (socket) => {
     let newUserName = socket.handshake.query['user'];
