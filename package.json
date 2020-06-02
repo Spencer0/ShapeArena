@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
+    "pg": "^8.2.1",
     "socket.io": "^2.3.0"
   }
 }

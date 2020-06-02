@@ -5,8 +5,31 @@ var http = require('http').createServer(app);
 const port = process.env.PORT || 3000;
 const io = require('socket.io')(http);
 const basicAuth = require('express-basic-auth');
+const { Pool, Client } = require('pg')
+
+const pool = new Pool({
+    user: 'postgres',
+    host: 'database-1.cdyivaq2pji9.us-east-1.rds.amazonaws.com',
+    database: 'sa',
+    password: 'mypassword',
+    port: 5432,
+})
+
+const authorizeUser = (username, password) => {
+    pool.query("SELECT EXISTS (select * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
+        console.log(username + " exists with given password? ", res.rows[0]['exists'])
+    });
+}
+
+
 const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
+
+
+authorizeUser("spencer", "strickland")
+authorizeUser("lisa", "a")
+authorizeUser("garrett", "buris")
+authorizeUser("admin", "wrong-pass")
 
 //Serve static 
 app.use(express.static('public'))
@@ -18,11 +41,7 @@ app.get('/', (req, res) => {
 })
 
 //User service w/ BasicAuth
-app.post('/', basicAuth({
-                 users: { 'admin': 'supersecret',
-                          's': '1',
-                          'garrett': 'buris',
-                          'guest': '' }}), 
+app.post('/', basicAuth( { authorizer: authorizeUser } ), 
                  (req, res) => {
 
     res.sendFile(__dirname + '/index.html');
