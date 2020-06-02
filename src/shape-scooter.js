@@ -123,6 +123,7 @@ function ShapeScooter(){
                             if(this.collides(this.state.player[playerIdInternal], bullet)){
                                 this.respawnPlayer(playerIdInternal);
                                 this.levelUp(playerId, 2);
+                                if(!io) { return }
                                 io.sockets.emit('state', this.state);
                             }
                         }
