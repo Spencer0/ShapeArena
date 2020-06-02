@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
     console.log('a user connected');
     console.log('ACTIVE USERS:', ++activeUsers);
     shapescooter.newPlayer(socket.id, newUserName);
+    if(!io) { return }
     io.emit('connection-event', activeUsers);
 
     socket.on('disconnect', () => {
