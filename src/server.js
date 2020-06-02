@@ -20,7 +20,8 @@ app.get('/', (req, res) => {
 //User service w/ BasicAuth
 app.post('/', basicAuth({
                  users: { 'admin': 'supersecret',
-                          's': 1,
+                          's': '1',
+                          'garrett': 'buris',
                           'guest': '' }}), 
                  (req, res) => {
 
