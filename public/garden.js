@@ -242,11 +242,6 @@
     }
     
     function guestLogin(){
-        console.log(document.getElementById("shape-user").value, 
-                    document.getElementById("shape-pass").value);
-
-        let tryPass = document.getElementById("shape-pass").value;
-        let tryUser = document.getElementById("shape-user").value;
         fetch('/', { 
             method: 'post', 
             headers: new Headers({
