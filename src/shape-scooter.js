@@ -101,49 +101,63 @@ function ShapeScooter(){
     }
 
     this.updateProjectilePositions = function(){
-            for(playerId of Object.keys(this.state.player)){
-                let bullets = this.state.player[playerId].bullets;
-                if(!bullets) { continue }
-                for(bulletId of Object.keys(bullets)){
-                    let bullet = bullets[bulletId];
-                    //See if it has any life left in it
-                    bullet.currentLife--
-                    if(bullet.currentLife <= 0){
-                        delete this.state.player[playerId].bullets[bullet.id]
-                        this.state.player[playerId].bulletCount--;
-                        continue;
-                    }
-
-                    //If it does, move it forward 
-                    this.updateBulletPosition(bullet)
-                    
-                    //Check collisions
-                    for(playerIdInternal of Object.keys(this.state.player)){
-                        if(bullet.color !== this.state.player[playerIdInternal].color){
-                            if(this.collides(this.state.player[playerIdInternal], bullet)){
-                                this.respawnPlayer(playerIdInternal);
-                                this.levelUp(playerId, 2);
-                                if(typeof io === 'undefined') { return }
-                                io.sockets.emit('state', this.state);
-                            }
-                        }
-                    }
-                    
-                    for(enemyId of Object.keys(this.state.enemies)){
-                        if(this.collides(this.state.enemies[enemyId], bullet)){
-                            if(this.state.enemies[enemyId].life === 0){
-                                delete this.state.enemies[enemyId] 
-                                this.state.enemyCount--;
-                                this.levelUp(playerId, 1);
-                            }else{
-                                this.state.enemies[enemyId].life--;
-                            }
-                            bullet.currentLife = 0;
-                        }
+        for(playerId of Object.keys(this.state.player)){
+            let bullets = this.state.player[playerId].bullets;
+            for(enemyId of Object.keys(this.state.enemies)){
+                //Did they hit me?
+                if(this.collidesSquares(this.state.enemies[enemyId], this.state.player[playerId])){
+                    if(this.state.enemies[enemyId].life === 0){
+                        this.respawnPlayer(playerIdInternal);
                     }
                 }
             }
+            if(!bullets) { continue }
+            for(bulletId of Object.keys(bullets)){
+                let bullet = bullets[bulletId];
+                //See if it has any life left in it
+                bullet.currentLife--
+                if(bullet.currentLife <= 0){
+                    delete this.state.player[playerId].bullets[bullet.id]
+                    this.state.player[playerId].bulletCount--;
+                    continue;
+                }
+
+                //If it does, move it forward 
+                this.updateBulletPosition(bullet)
+                
+                //Check collisions
+                for(playerIdInternal of Object.keys(this.state.player)){
+                    if(bullet.color !== this.state.player[playerIdInternal].color){
+                        if(this.collides(this.state.player[playerIdInternal], bullet)){
+                            this.respawnPlayer(playerIdInternal);
+                            this.levelUp(playerId, 2);
+                            if(typeof io === 'undefined') { return }
+                            io.sockets.emit('state', this.state);
+                        }
+                    }
+                }
+                
+                //For each player, for each enemy 
+                for(enemyId of Object.keys(this.state.enemies)){
+                    
+                    //Did i hit them?
+                    if(this.collides(this.state.enemies[enemyId], bullet)){
+                        if(this.state.enemies[enemyId].life === 0){
+                            delete this.state.enemies[enemyId] 
+                            this.state.enemyCount--;
+                            this.levelUp(playerId, 1);
+                        }else{
+                            this.state.enemies[enemyId].life--;
+                        }
+                        bullet.currentLife = 0;
+                    }
+                
+                }
+            }
+            
+        }
     }
+    
 
     this.levelUp = function(playerId, levels) {
         let player = this.state.player[playerId];
@@ -172,7 +186,7 @@ function ShapeScooter(){
             let enemy = this.state.enemies[enemyId];
             enemy.x += 1;
             enemy.y += 1;
-            if(enemy.x >= 2000 || enemy.y >= 2000 ){
+            if(enemy.x >= gameWorldWidth || enemy.y >= gameWorldHeight ){
                 this.state.enemyCount--;
                 delete this.state.enemies[enemyId]
             }
@@ -196,6 +210,50 @@ function ShapeScooter(){
             }
         }
         return false;
+    }
+
+    this.collidesSquares = function(enemy, player){
+
+        //TODO: Running into an ememy kils you
+        return false;
+        if(player.x < 60 && player.y < 60){
+            return
+        }
+        if(!enemy) {return}
+        // l1: Top Left coordinate of first rectangle.
+        let l1 = {
+            x: enemy.x,
+            y: enemy.y
+        } 
+        // r1: Bottom Right coordinate of first rectangle.
+        let r1 = {
+            x: enemy.x + enemy.width,
+            y: enemy.y + enemy.height
+        } 
+        // l2: Top Left coordinate of second rectangle.
+        let l2 = {
+            x: player.x,
+            y: player.y
+        } 
+        // r2: Bottom Right coordinate of second rectangle.
+        let r2 = {
+            x: player.x + player.width,
+            y: player.y + player.height,
+        } 
+
+
+        // If one rectangle is on left side of other 
+        if (l1.x >= r2.x || l2.x >= r1.x) 
+            {   console.log("rect above", l2, l1)
+                return false; } 
+
+        // If one rectangle is above other 
+        if (l1.y <= r2.y || l2.y <= r1.y) 
+            { console.log("rect below", l2, l1)
+                return false; } 
+        
+        console.log("rect IN")
+        return true; 
     }
 
     setInterval(() => {
