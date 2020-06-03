@@ -19,17 +19,18 @@ function ShapeScooter(){
         this.state.player[socketId] = {
             x: 30 * this.state.activeUsers,
             y: 30 * this.state.activeUsers,
-            width: 35,
-            height: 20,
+            width: 4,
+            height: 12,
             color: this.randomColor(),
             id: socketId,
             user: userName,
             bullets: {},
             bulletCount: 0,
             bulletIncId: 0,
-            bulletRadius: 5,
-            bulletLifespan: 100,
+            bulletRadius: 1,
+            bulletLifespan: 5,
             level: 1,
+            speed: 3,
         }
     }
     
@@ -56,7 +57,7 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-        this.state.enemies[this.state.enemyIncId] = enemyFactory('Black', 1);
+        this.state.enemies[this.state.enemyIncId] = enemyFactory('Brown', 1);
         this.state.enemyCount++;
 		this.state.enemyIncId++;
     }
@@ -79,19 +80,19 @@ function ShapeScooter(){
             switch(directionString.charAt(directionCount)){
                 case "w":
                     if(player.y <= canvasPadding){ continue }
-                    player.y -= 10;
+                    player.y -= player.speed;
                     break;
                 case "a":
                     if(player.x <= canvasPadding){ continue }
-                    player.x -= 10;
+                    player.x -= player.speed;
                     break;
                 case "s":
                     if(player.y >= gameWorldHeight-canvasPadding){ continue }
-                    player.y += 10;
+                    player.y += player.speed;
                     break;
                 case "d":
                     if(player.x >= gameWorldWidth - canvasPadding){ continue }
-                    player.x += 10;
+                    player.x += player.speed;
                     break;
                 default:
                     break;
@@ -150,7 +151,7 @@ function ShapeScooter(){
             player.width *= 1.1;
             player.height *= 1.1;
             player.bulletRadius += 0.2;
-            player.bulletLifespan *= .9;
+            player.bulletLifespan += 1;
             player.level += 1;
         }
     }
@@ -181,8 +182,8 @@ function ShapeScooter(){
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x
         let yMovement = bullet.direction.y - bullet.y 
-        bullet.x += xMovement * (1 / bullet.lifespan);
-        bullet.y += yMovement  * (1 / bullet.lifespan);
+        bullet.x += xMovement *  0.001;
+        bullet.y += yMovement  * 0.001;
     }
 
     this.collides = function(enemy,bullet){

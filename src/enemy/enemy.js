@@ -4,7 +4,7 @@ function Enemy(color, life) {
     this.width = 50;
     this.height = 50;
     this.color = color;
-    this.user = "void";
+    this.user = "mammoth";
     this.bullets = {};
     this.bulletCount = 0;
     this.life = life;

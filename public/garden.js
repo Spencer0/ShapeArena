@@ -154,7 +154,7 @@
                 let player = state.player[key]
                 if(!player) {continue;}
                 this.context.beginPath();
-                this.context.fillStyle = player.color ? player.color : "black";
+                this.context.fillStyle = player.color ? player.color : "red";
                 this.context.fillRect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
                 this.context.font = "16px sans sherif";
