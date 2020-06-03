@@ -15,10 +15,13 @@ const pool = new Pool({
     port: 5432,
 })
 
-const authorizeUser = (username, password) => {
-    pool.query("SELECT EXISTS (select * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
+const authorizeUser = async function(username, password){
+    
+    await pool.query("SELECT EXISTS (select * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
         console.log(username + " exists with given password? ", res.rows[0]['exists'])
+        return true
     });
+
 }
 
 
@@ -26,10 +29,6 @@ const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
 
 
-authorizeUser("spencer", "strickland")
-authorizeUser("lisa", "a")
-authorizeUser("garrett", "buris")
-authorizeUser("admin", "wrong-pass")
 
 //Serve static 
 app.use(express.static('public'))
@@ -43,11 +42,13 @@ app.get('/', (req, res) => {
 //User service w/ BasicAuth
 app.post('/', basicAuth( { authorizer: authorizeUser } ), 
                  (req, res) => {
-
-    res.sendFile(__dirname + '/index.html');
     res.send(JSON.stringify({authstatus: true}));
 })
 
+app.post('/users', (req, res) => {
+    console.log("Create me!", req)
+    res.send(JSON.stringify({createStatus: true}));
+})
 
 io.on('connection', (socket) => {
     let newUserName = socket.handshake.query['user'];
@@ -86,11 +87,13 @@ io.on('connection', (socket) => {
 
 });
 
+
 setInterval(() => {
     shapescooter.updateProjectilePositions();
     shapescooter.updateEnemyPositions();
     io.sockets.emit('state', shapescooter.state);
 }, 1000 / 60);
+
 
 http.listen(port, () => {
     console.log('Garden Server, Port: ', port);

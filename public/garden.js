@@ -44,9 +44,9 @@
         document.getElementById("login-btn").onclick = showLoginDiv;
         document.getElementById("create-btn").onclick = showRegistrationDiv;
         document.getElementById("login-submit-btn").onclick = standardLogin;
-        console.log(document.getElementById("login-reset").onclick)
+        document.getElementById("create-submit-btn").onclick = createAccount;
         document.getElementById("login-reset").onclick = showLoginOptions;
-        console.log(document.getElementById("login-reset").onclick)
+        
         function randomTrimColor(){
                 let letters = '6789ABCDEF';
                 let color = '#';
@@ -309,6 +309,22 @@
         let tryPass = document.getElementById("shape-pass").value;
         let tryUser = document.getElementById("shape-user").value;
         fetch('/', { 
+            method: 'post', 
+            headers: new Headers({
+              'Authorization': 'Basic '+btoa(tryUser + ":" + tryPass), 
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }), 
+            body: 'A=1&B=2'
+        }).then(response => response.json())
+        .then(data => user = tryUser)
+        .then( x => document.getElementById("user-menu").innerText = user)
+        .then(data => processLoginResponse(data));
+    }
+
+    function createAccount(){
+        let tryPass = document.getElementById("shape-create-pass").value;
+        let tryUser = document.getElementById("shape-create-user").value;
+        fetch('/users', { 
             method: 'post', 
             headers: new Headers({
               'Authorization': 'Basic '+btoa(tryUser + ":" + tryPass), 
