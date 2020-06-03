@@ -17,8 +17,8 @@ function ShapeScooter(){
     this.newPlayer = function(socketId, userName){
         if(!userName){return}
         this.state.player[socketId] = {
-            x: 30 * this.state.activeUsers,
-            y: 30 * this.state.activeUsers,
+            x: 15,
+            y: 15,
             width: 4,
             height: 12,
             color: this.randomColor(),
@@ -28,7 +28,7 @@ function ShapeScooter(){
             bulletCount: 0,
             bulletIncId: 0,
             bulletRadius: 1,
-            bulletLifespan: 5,
+            bulletLifespan: 50,
             level: 1,
             speed: 3,
         }
@@ -196,8 +196,13 @@ function ShapeScooter(){
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x
         let yMovement = bullet.direction.y - bullet.y 
-        bullet.x += xMovement *  0.001;
-        bullet.y += yMovement  * 0.001;
+        if(xMovement > 0){
+            bullet.x += Math.cos(yMovement/ xMovement);
+            bullet.y += Math.sin(yMovement/ xMovement);
+        }else{
+            bullet.x -= Math.cos(yMovement/ xMovement);
+            bullet.y -= Math.sin(yMovement/ xMovement);
+        }
     }
 
     this.collides = function(enemy,bullet){

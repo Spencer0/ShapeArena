@@ -148,6 +148,7 @@
         }
 
         this.drawState = function(state){
+
             console.log('rendering')
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
@@ -174,6 +175,7 @@
                     this.context.stroke();
                 }
             }
+
             for(key of Object.keys(state.enemies)){
                 let enemy = state.enemies[key]
                 this.context.beginPath();
@@ -194,10 +196,12 @@
                     this.context.stroke();
                 }
             }
+
             if(this.clicked){
                 this.submitMouseInput();
                 this.newMouseInput = false;
             }
+            
             if(this.newKeyInput){
                 this.submitKeyboardInput();
             }

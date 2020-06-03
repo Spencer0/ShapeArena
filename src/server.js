@@ -1,73 +1,43 @@
 const express = require('express');
-const ShapeScooter = require('./shape-scooter');
-const app = express();
-var http = require('http').createServer(app);
-const port = process.env.PORT || 3000;
-const io = require('socket.io')(http);
+const ShapeScooter = require('./shape-game/shape-scooter');
 const basicAuth = require('express-basic-auth');
-const { Pool, Client } = require('pg')
-
-const pool = new Pool({
-    user: 'postgres',
-    host: 'database-1.cdyivaq2pji9.us-east-1.rds.amazonaws.com',
-    database: 'sa',
-    password: 'mypassword',
-    port: 5432,
-})
-
-const authorizeUser = async function(username, password, cb){
-    console.log(username, username == 'guest')
-    if(username==='guest'){return cb(null,  true) }
-    await pool.query("SELECT EXISTS (select * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
-        console.log(username + " exists with given password? ", res.rows[0]['exists'])
-        return cb(null, res.rows[0]['exists'])
-    });
-
-}
-
-const createUser = async function(username, password){
-    
-    await pool.query("insert into users(username, password) values ('"+username+"','"+password+"')", (err, res) => {
-        if(err){
-            console.log("creation error", err)
-        }else{
-            console.log(username + " Has been created")
-        }
-        return true
-    });
-
-}
-
+const dbService = require('./services/db.js');
+const port = process.env.PORT || 3000;
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const db = new dbService();
 const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
 
-//Parsing tool
-app.use(express.json())
 
-//Serve static 
+//Express settings
+app.use(express.json())
 app.use(express.static('public'))
 
-
-//Server via server
+//Client gets served static page
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 })
 
-//User service w/ BasicAuth
-app.post('/', basicAuth( { authorizer: authorizeUser, authorizeAsync: true } ), 
+//Client waits for an auth code before connection to the socket
+app.post('/', basicAuth( { authorizer: db.authorizeUser, authorizeAsync: true } ), 
                  (req, res) => {
     res.send(JSON.stringify({authstatus: true}));
 })
 
+//Route for creating a user
 app.post('/users', (req, res) => {
-    console.log('Got body:', req.body);
+    console.log('Attempting to create user:', req.body);
     let tryNewUser = req.body.username;
     let tryNewPass = req.body.password;
-    if(createUser(tryNewUser, tryNewPass)){
+    if(db.createUser(tryNewUser, tryNewPass)){
         res.sendStatus(200);
     }
 })
 
+
+//When client connects, a username will be unique for all clients 
 io.on('connection', (socket) => {
     let newUserName = socket.handshake.query['user'];
     console.log('a user connected');
