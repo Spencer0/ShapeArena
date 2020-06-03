@@ -15,15 +15,23 @@ const pool = new Pool({
     port: 5432,
 })
 
-const authorizeUser = async function(username, password){
+const authorizeUser = async function(username, password, cb){
     
     await pool.query("SELECT EXISTS (select * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
+        console.log(username + " exists with given password? ", res.rows[0]['exists'])
+        return cb(null, res.rows[0]['exists'])
+    });
+
+}
+
+const createUser = async function(username, password){
+    
+    await pool.query("insert * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
         console.log(username + " exists with given password? ", res.rows[0]['exists'])
         return true
     });
 
 }
-
 
 const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
@@ -40,7 +48,7 @@ app.get('/', (req, res) => {
 })
 
 //User service w/ BasicAuth
-app.post('/', basicAuth( { authorizer: authorizeUser } ), 
+app.post('/', basicAuth( { authorizer: authorizeUser, authorizeAsync: true } ), 
                  (req, res) => {
     res.send(JSON.stringify({authstatus: true}));
 })
