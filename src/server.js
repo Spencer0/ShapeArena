@@ -26,8 +26,12 @@ const authorizeUser = async function(username, password, cb){
 
 const createUser = async function(username, password){
     
-    await pool.query("insert * from users where password='"+password+"' and username='"+username+"')::int", (err, res) => {
-        console.log(username + " exists with given password? ", res.rows[0]['exists'])
+    await pool.query("insert into users(username, password) values ('"+username+"','"+password+"')", (err, res) => {
+        if(err){
+            console.log("creation error", err)
+        }else{
+            console.log(username + " Has been created")
+        }
         return true
     });
 
@@ -36,7 +40,8 @@ const createUser = async function(username, password){
 const shapescooter = new ShapeScooter();
 let activeUsers = shapescooter.state.activeUsers;
 
-
+//Parsing tool
+app.use(express.json())
 
 //Serve static 
 app.use(express.static('public'))
@@ -54,8 +59,12 @@ app.post('/', basicAuth( { authorizer: authorizeUser, authorizeAsync: true } ),
 })
 
 app.post('/users', (req, res) => {
-    console.log("Create me!", req)
-    res.send(JSON.stringify({createStatus: true}));
+    console.log('Got body:', req.body);
+    let tryNewUser = req.body.username;
+    let tryNewPass = req.body.password;
+    if(createUser(tryNewUser, tryNewPass)){
+        res.sendStatus(200);
+    }
 })
 
 io.on('connection', (socket) => {

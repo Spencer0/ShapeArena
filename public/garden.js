@@ -46,7 +46,7 @@
         document.getElementById("login-submit-btn").onclick = standardLogin;
         document.getElementById("create-submit-btn").onclick = createAccount;
         document.getElementById("login-reset").onclick = showLoginOptions;
-        
+
         function randomTrimColor(){
                 let letters = '6789ABCDEF';
                 let color = '#';
@@ -324,17 +324,22 @@
     function createAccount(){
         let tryPass = document.getElementById("shape-create-pass").value;
         let tryUser = document.getElementById("shape-create-user").value;
+        console.log(tryPass,tryUser)
         fetch('/users', { 
             method: 'post', 
-            headers: new Headers({
-              'Authorization': 'Basic '+btoa(tryUser + ":" + tryPass), 
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }), 
-            body: 'A=1&B=2'
-        }).then(response => response.json())
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            username: tryUser,
+            password: tryPass,
+            body: JSON.stringify({username: tryUser,
+                password: tryPass})
+        }).then(response => console.log(response))
         .then(data => user = tryUser)
-        .then( x => document.getElementById("user-menu").innerText = user)
-        .then(data => processLoginResponse(data));
+        .then( x => document.getElementById("user-menu").innerText = user).
+        then(data => processLoginResponse(data))
+        
     }
 
     
