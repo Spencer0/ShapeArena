@@ -1,6 +1,6 @@
 function Enemy(color, life) {
-    this.x = 30;
-    this.y = 30;
+    this.x = 100 + Math.random() * 300;
+    this.y = 100 + Math.random() * 300;
     this.width = 50;
     this.height = 50;
     this.color = color;
