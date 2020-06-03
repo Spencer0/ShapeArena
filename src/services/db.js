@@ -26,13 +26,42 @@ function DBService(){
         await pool.query("insert into users(username, password) values ('"+username+"','"+password+"')", (err, res) => {
             if(err){
                 console.log("creation error", err)
+                return false
             }else{
                 console.log(username + " Has been created")
+                return true
             }
-            return true
+            
         });
     }
 
+    this.storeUserExperience = async function(username, exp){
+        
+        await pool.query("insert into users(username, score) values ('"+username+"','"+exp+"')", (err, res) => {
+            if(err){
+                console.log("creation error", err)
+                return false
+            }else{
+                console.log(username + " has been saved at level " + exp)
+                return true
+            }
+            
+        });
+    }
+
+    this.loadUserExperience = async function(username, exp){
+        
+        await pool.query("select score from   ('"+username+"','"+exp+"')", (err, res) => {
+            if(err){
+                console.log("creation error", err)
+                return false
+            }else{
+                console.log(username + " has been saved at level " + exp)
+                return true
+            }
+            
+        });
+    }
 
 }
 

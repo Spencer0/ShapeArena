@@ -201,7 +201,7 @@
                 this.submitMouseInput();
                 this.newMouseInput = false;
             }
-            
+
             if(this.newKeyInput){
                 this.submitKeyboardInput();
             }
@@ -335,10 +335,15 @@
             body: JSON.stringify({username: tryUser,
                 password: tryPass})
         }).then(response => console.log(response))
-        .then(data => user = tryUser)
-        .then( x => document.getElementById("user-menu").innerText = user).
-        then(data => processLoginResponse(data))
+        .then(data =>finishCreateAccount(data))
         
+        function finishCreateAccount(data){
+            user = tryUser;
+            document.getElementById("user-menu").innerText = user;
+            document.getElementById("shape-user").value = tryUser;
+            document.getElementById("shape-pass").value = tryPass;
+            showLoginDiv();
+        }
     }
 
     

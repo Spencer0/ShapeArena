@@ -33,6 +33,8 @@ app.post('/users', (req, res) => {
     let tryNewPass = req.body.password;
     if(db.createUser(tryNewUser, tryNewPass)){
         res.sendStatus(200);
+    }else{
+        res.sendStatus(500);
     }
 })
 
