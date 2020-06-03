@@ -1,5 +1,5 @@
-const gameWorldHeight = 6000;
-const gameWorldWidth = 8000;
+const gameWorldHeight = 1200;
+const gameWorldWidth = 1600;
 const canvasPadding = 25;
 const enemyFactory = require('./enemy/enemy-factory');
 
@@ -56,7 +56,6 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-		//
         this.state.enemies[this.state.enemyIncId] = enemyFactory('Black', 1);
         this.state.enemyCount++;
 		this.state.enemyIncId++;
