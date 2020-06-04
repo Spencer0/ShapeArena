@@ -5,7 +5,8 @@ const enemyFactory = require('./enemy/enemy-factory');
 
 function ShapeScooter(){
 
-    this.state = {
+    //This is whats needed to be sent to the view for a proper render 
+    this.clientState = {
         player: {},
         enemies: {},
         shooting: false,
@@ -14,28 +15,76 @@ function ShapeScooter(){
         activeUsers: 0
     }
 
-    this.newPlayer = function(socketId, userName){
-        if(!userName){return}
-        this.state.player[socketId] = {
-            x: 15,
-            y: 15,
-            width: 4,
-            height: 12,
-            color: this.randomColor(),
-            id: socketId,
-            user: userName,
-            bullets: {},
-            bulletCount: 0,
-            bulletIncId: 0,
-            bulletRadius: 1,
-            bulletLifespan: 50,
-            level: 1,
-            speed: 3,
-        }
+    //This is everything else 
+    this.serverState = {
+        player: {},
     }
-    
+    let self = this;
+
+    this.newPlayer =  async function(socketId, userName, db){
+        if(!userName){return}
+        db.loadUser(userName, socketId, this.spawnPlayer)
+
+    }
+
+    this.spawnPlayer = function(userName, socketId, player){
+        console.log(player, this, self)
+        
+        if(player){
+            //console.log(tryLoadedPlayer)
+            self.clientState.player[socketId] = {
+                x: player.x,
+                y: player.y,
+                width: 4,
+                height: 12,
+                color: player.color,
+                id: socketId,
+                user: userName,
+                bullets: {},
+                bulletCount: 0,
+                bulletIncId: 0,
+                bulletRadius: 1,
+                bulletLifespan: 50,
+                level: player.level,
+                speed: 3,
+            }
+
+            self.serverState.player[socketId] = {
+                id: socketId,
+                user: userName,
+                shouldSave: false,
+            }
+
+        }else{
+            //console.log(tryLoadedPlayer)
+            self.clientState.player[socketId] = {
+                x: 15,
+                y: 15,
+                width: 4,
+                height: 12,
+                color: self.randomColor(),
+                id: socketId,
+                user: userName,
+                bullets: {},
+                bulletCount: 0,
+                bulletIncId: 0,
+                bulletRadius: 1,
+                bulletLifespan: 50,
+                level: 1,
+                speed: 3,
+            }
+
+            self.serverState.player[socketId] = {
+                id: socketId,
+                user: userName,
+                shouldSave: false,
+            }
+        }
+        
+    }
+
     this.newProjectile = function(mouse, socketId){
-        let bulletsPlayer = this.state.player[socketId];
+        let bulletsPlayer = this.clientState.player[socketId];
         if(bulletsPlayer.bulletCount >= 10) { return }
         bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
                 x: bulletsPlayer.x,
@@ -57,13 +106,14 @@ function ShapeScooter(){
     }
 
     this.newEnemy = function(){
-        this.state.enemies[this.state.enemyIncId] = enemyFactory('Brown', 1);
-        this.state.enemyCount++;
-		this.state.enemyIncId++;
+        this.clientState.enemies[this.clientState.enemyIncId] = enemyFactory('Brown', 1);
+        this.clientState.enemyCount++;
+		this.clientState.enemyIncId++;
     }
 
     this.removePlayer = function(socketId){
-        delete this.state.player[socketId];
+        delete this.clientState.player[socketId];
+        delete this.serverState.player[socketId];
     }
 
     this.randomColor = function() {
@@ -75,7 +125,7 @@ function ShapeScooter(){
     this.updatePlayerPosition = function(input, id){
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
-        let player = this.state.player[id];
+        let player = this.clientState.player[id];
         while(directionCount--){
             switch(directionString.charAt(directionCount)){
                 case "w":
@@ -101,12 +151,12 @@ function ShapeScooter(){
     }
 
     this.updateProjectilePositions = function(){
-        for(playerId of Object.keys(this.state.player)){
-            let bullets = this.state.player[playerId].bullets;
-            for(enemyId of Object.keys(this.state.enemies)){
+        for(playerId of Object.keys(this.clientState.player)){
+            let bullets = this.clientState.player[playerId].bullets;
+            for(enemyId of Object.keys(this.clientState.enemies)){
                 //Did they hit me?
-                if(this.collidesSquares(this.state.enemies[enemyId], this.state.player[playerId])){
-                    if(this.state.enemies[enemyId].life === 0){
+                if(this.collidesSquares(this.clientState.enemies[enemyId], this.clientState.player[playerId])){
+                    if(this.clientState.enemies[enemyId].life === 0){
                         this.respawnPlayer(playerIdInternal);
                     }
                 }
@@ -117,8 +167,8 @@ function ShapeScooter(){
                 //See if it has any life left in it
                 bullet.currentLife--
                 if(bullet.currentLife <= 0){
-                    delete this.state.player[playerId].bullets[bullet.id]
-                    this.state.player[playerId].bulletCount--;
+                    delete this.clientState.player[playerId].bullets[bullet.id]
+                    this.clientState.player[playerId].bulletCount--;
                     continue;
                 }
 
@@ -126,28 +176,28 @@ function ShapeScooter(){
                 this.updateBulletPosition(bullet)
                 
                 //Check collisions
-                for(playerIdInternal of Object.keys(this.state.player)){
-                    if(bullet.color !== this.state.player[playerIdInternal].color){
-                        if(this.collides(this.state.player[playerIdInternal], bullet)){
+                for(playerIdInternal of Object.keys(this.clientState.player)){
+                    if(bullet.color !== this.clientState.player[playerIdInternal].color){
+                        if(this.collides(this.clientState.player[playerIdInternal], bullet)){
                             this.respawnPlayer(playerIdInternal);
                             this.levelUp(playerId, 2);
                             if(typeof io === 'undefined') { return }
-                            io.sockets.emit('state', this.state);
+                            io.sockets.emit('state', this.clientState);
                         }
                     }
                 }
                 
                 //For each player, for each enemy 
-                for(enemyId of Object.keys(this.state.enemies)){
+                for(enemyId of Object.keys(this.clientState.enemies)){
                     
                     //Did i hit them?
-                    if(this.collides(this.state.enemies[enemyId], bullet)){
-                        if(this.state.enemies[enemyId].life === 0){
-                            delete this.state.enemies[enemyId] 
-                            this.state.enemyCount--;
+                    if(this.collides(this.clientState.enemies[enemyId], bullet)){
+                        if(this.clientState.enemies[enemyId].life === 0){
+                            delete this.clientState.enemies[enemyId] 
+                            this.clientState.enemyCount--;
                             this.levelUp(playerId, 1);
                         }else{
-                            this.state.enemies[enemyId].life--;
+                            this.clientState.enemies[enemyId].life--;
                         }
                         bullet.currentLife = 0;
                     }
@@ -160,7 +210,8 @@ function ShapeScooter(){
     
 
     this.levelUp = function(playerId, levels) {
-        let player = this.state.player[playerId];
+        let player = this.clientState.player[playerId];
+        this.serverState.player[playerId].shouldSave = true;
         for(let i = 0; i < levels; i++) {
             player.width *= 1.1;
             player.height *= 1.1;
@@ -170,6 +221,16 @@ function ShapeScooter(){
         }
     }
     
+    this.save = function(db){
+        for(playerId of Object.keys(this.serverState.player)){
+            if(this.serverState.player[playerId].shouldSave){
+                console.log("attempting to save")
+                db.saveUser(this.clientState.player[playerId])
+                this.serverState.player[playerId].shouldSave = false
+            }
+        }
+    }
+
     this.respawnPlayer = function( playerId ) {
         let player = this.state.player[playerId];
         player.x = 30;
@@ -182,13 +243,13 @@ function ShapeScooter(){
     }
 
     this.updateEnemyPositions = function(){
-        for(enemyId of Object.keys(this.state.enemies)){
-            let enemy = this.state.enemies[enemyId];
+        for(enemyId of Object.keys(this.clientState.enemies)){
+            let enemy = this.clientState.enemies[enemyId];
             enemy.x += 1;
             enemy.y += 1;
             if(enemy.x >= gameWorldWidth || enemy.y >= gameWorldHeight ){
-                this.state.enemyCount--;
-                delete this.state.enemies[enemyId]
+                this.clientState.enemyCount--;
+                delete this.clientState.enemies[enemyId]
             }
         }
     }
@@ -262,9 +323,9 @@ function ShapeScooter(){
     }
 
     setInterval(() => {
-        if(Object.keys(this.state.player).length !== 0){
+        if(Object.keys(this.clientState.player).length !== 0){
             
-            if(this.state.enemyCount < 10){
+            if(this.clientState.enemyCount < 10){
                 this.newEnemy();
             }
         }

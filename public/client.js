@@ -1,3 +1,8 @@
+/*
+This is the view
+ideally here there is *0* business logic, not quite there
+*/
+
 (global => {
 
     let userNames = ['Luda', 'Nicki', 'Snoop', 'JayZ', 'A$AP', 'Kanye', 'Doja', '21Pilots', 'Nickleback', 'Sion', 'Olaf', 'Bard', 'Elise', 'Ashe'];
@@ -7,7 +12,6 @@
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let shapeGame;
     let activityCounter = undefined;
-    console.log(activityCounter);
 
 
         
@@ -53,7 +57,6 @@
                 for (var i = 0; i < 6; i++) {
                     color += letters[Math.floor(Math.random() * letters.length)];
                 }
-                console.log("color, ", color)
                 document.getElementById("top-bar").style.backgroundColor = color;
                 document.getElementById("chat").style.backgroundColor = color;
                 document.getElementById("bottom-bar").style.backgroundColor = color;
@@ -149,7 +152,6 @@
 
         this.drawState = function(state){
 
-            console.log('rendering')
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
                 let player = state.player[key]
@@ -239,7 +241,7 @@
         this.drawBackground();
     }
             
-    function beginGame(){
+    function displayGame(){
         document.getElementById("media-pane").style.display = "block";
         document.getElementById("auth-div").style.display = "none";
         if(!shapeGame) shapeGame= new squareGame(user, socket);
@@ -258,7 +260,10 @@
     }
 
     function processLoginResponse(data){
-        console.log(data)
+        connectToServer();
+    }
+    
+    function connectToServer(){
         socket = io({ query: "user="+user });
                 
         socket.on("connection-event", function(msg){
@@ -271,15 +276,18 @@
             scrollChatDiv();
         });
 
+        connectToGame();
+    }
+
+    function connectToGame(){
+        displayGame();
+
         socket.on('state', function (state) {
-            if(!shapeGame) { return }
+            if(!shapeGame || !state) { return }
             shapeGame.drawState(state);
         });
-        
-        setInterval(pingCheck, 1000);
-        beginGame();
     }
-    
+
     function showLoginOptions(){
         document.getElementById("login-div").style.display = "none";
         document.getElementById("login-options").style.display = "block";

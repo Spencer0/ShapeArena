@@ -1,4 +1,16 @@
 
+/*
+Data Access Layer
+*/
+
+/*
+PLAYER MODEL:
+x
+y
+userId
+color 
+level
+*/
 function DBService(){
 
     const { Pool } = require('pg')
@@ -35,31 +47,33 @@ function DBService(){
         });
     }
 
-    this.storeUserExperience = async function(username, exp){
+    this.saveUser = async function(player){
         
-        await pool.query("insert into users(username, score) values ('"+username+"','"+exp+"')", (err, res) => {
+        await pool.query("insert into characters(x, y, username, color, level) values \
+                        ('"+player.x+"','"+player.y+"','"+player.user+"','"+player.color+"','"+player.level+"') \
+                        ON CONFLICT (username) DO UPDATE SET (username, color, level, x, y) = \
+                        (EXCLUDED.username, EXCLUDED.color, EXCLUDED.level, EXCLUDED.x, EXCLUDED.y)", (err, res) => {
             if(err){
                 console.log("creation error", err)
                 return false
             }else{
-                console.log(username + " has been saved at level " + exp)
+                console.log(player.user + " has been saved at level " + player.level)
                 return true
             }
             
         });
     }
 
-    this.loadUserExperience = async function(username, exp){
-        
-        await pool.query("select score from   ('"+username+"','"+exp+"')", (err, res) => {
+    this.loadUser =  async function(username, socketId, cb){
+        console.log(username, socketId, cb)
+        return await pool.query("select * from characters where username='"+username+"'", (err, res) => {
             if(err){
                 console.log("creation error", err)
-                return false
+                return cb(username, socketId, null)
             }else{
-                console.log(username + " has been saved at level " + exp)
-                return true
+                console.log("found em ", username)
+                return cb(username, socketId, res.rows[0])
             }
-            
         });
     }
 

@@ -1,3 +1,6 @@
+
+
+
 const express = require('express');
 const ShapeScooter = require('./shape-game/shape-scooter');
 const basicAuth = require('express-basic-auth');
@@ -8,8 +11,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const db = new dbService();
 const shapescooter = new ShapeScooter();
-let activeUsers = shapescooter.state.activeUsers;
-
+let activeUsers = shapescooter.clientState.activeUsers;
 
 //Express settings
 app.use(express.json())
@@ -38,29 +40,29 @@ app.post('/users', (req, res) => {
     }
 })
 
-
 //When client connects, a username will be unique for all clients 
 io.on('connection', (socket) => {
+	
     let newUserName = socket.handshake.query['user'];
-    console.log('a user connected');
     console.log('ACTIVE USERS:', ++activeUsers);
-    shapescooter.newPlayer(socket.id, newUserName);
+    shapescooter.newPlayer(socket.id, newUserName, db);
+	
     if(!io) { return }
     io.emit('connection-event', activeUsers);
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
         console.log('ACTIVE USERS:', --activeUsers);
         shapescooter.removePlayer(socket.id);
         io.emit('connection-event', activeUsers);
     });
 
     socket.on('message-event', (msg) => {
-        console.log("Message broadcasting"  )
+        console.log("Message broadcasting", msg)
         io.emit('message-event', msg);
     });
 
     socket.on('error', (e) => {
+        console.log("ERROR", socket.id, e)
     })
 
     socket.on('keyboard-input', (data) => {
@@ -77,14 +79,22 @@ io.on('connection', (socket) => {
 
 });
 
-
+//Set up game loop [ out of place in this file ]
 setInterval(() => {
+
+    //Simulate the game server side 
     shapescooter.updateProjectilePositions();
     shapescooter.updateEnemyPositions();
-    io.sockets.emit('state', shapescooter.state);
+
+    //Save the players who leveled up
+    shapescooter.save(db);
+
+    //Update all the views
+    io.sockets.emit('state', shapescooter.clientState);
+
 }, 1000 / 60);
 
-
+//Set up listener for new connections 
 http.listen(port, () => {
     console.log('Garden Server, Port: ', port);
 });
