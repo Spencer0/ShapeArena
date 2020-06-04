@@ -85,6 +85,7 @@ function ShapeScooter(){
 
     this.newProjectile = function(mouse, socketId){
         let bulletsPlayer = this.clientState.player[socketId];
+        if(!bulletsPlayer) { return }
         if(bulletsPlayer.bulletCount >= 10) { return }
         bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
                 x: bulletsPlayer.x,
