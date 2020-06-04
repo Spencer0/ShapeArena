@@ -127,6 +127,7 @@ function ShapeScooter(){
         let directionString = Object.keys(input).join("");
         let directionCount = directionString.length;
         let player = this.clientState.player[id];
+        if(!player){return}
         while(directionCount--){
             switch(directionString.charAt(directionCount)){
                 case "w":
@@ -233,7 +234,7 @@ function ShapeScooter(){
     }
 
     this.respawnPlayer = function( playerId ) {
-        let player = this.state.player[playerId];
+        let player = this.clientState.player[playerId];
         player.x = 30;
         player.y = 30;
         player.width = 35;
