@@ -73,7 +73,7 @@ ideally here there is *0* business logic, not quite there
         document.getElementById("chat").style.backgroundColor = color;
         document.getElementById("bottom-bar").style.backgroundColor = color;
         document.getElementById("tint-btn-icon").style.color = color;
-        document.getElementById("auth-div").style.border = color + " 10px solid";
+      //  document.getElementById("auth-div").style.border = color + " 0.5em solid";
 
         return color;
     }
@@ -293,6 +293,8 @@ ideally here there is *0* business logic, not quite there
     }
     
     function guestLogin(){
+        console.log("showing spinner")
+        displaySpinner();
         fetch('/', { 
             method: 'post', 
             headers: new Headers({
@@ -324,6 +326,11 @@ ideally here there is *0* business logic, not quite there
         connectToGame();
     }
 
+    function displaySpinner(){
+        document.getElementById("auth-div").style.display = "none";
+        document.getElementById("spinner-div").style.display = "block";
+    }
+
     function connectToGame(){
         displayGame();
 
@@ -333,7 +340,8 @@ ideally here there is *0* business logic, not quite there
         });
     }
 
-    function showLoginOptions(){
+    function showLoginOptions(e){
+        e.preventDefault();
         document.getElementById("login-div").style.display = "none";
         document.getElementById("login-options").style.display = "block";
         document.getElementById("registration-div").style.display = "none";

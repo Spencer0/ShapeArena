@@ -7,6 +7,89 @@ body{
     color: white;
 }
 
+.auth-button{
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #00A6FF;
+  font-size: 1.5rem;
+  border: 1px solid #fff;
+  box-shadow: 2px 2px 5px #AFE9FF;
+  transition-duration: 0.5s;
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  margin: 5%;
+  padding: 2% 5% 2% 5%;
+} 
+
+#spinner-div {
+  animation: 2s linear infinite svg-animation;
+  max-width: 100px;
+}
+
+@keyframes svg-animation {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg)
+  }
+}
+
+circle {
+  animation: 1.4s ease-in-out infinite both circle-animation;
+  display: block;
+  fill: transparent;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 280;
+  stroke-width: 10px;
+  transform-origin: 50% 50%;
+  display: none;
+}
+
+@keyframes circle-animation {
+  0%,
+  25% {
+    stroke-dashoffset: 280;
+    transform: rotate(0);
+  }
+  
+  50%,
+  75% {
+    stroke-dashoffset: 75;
+    transform: rotate(45deg);
+  }
+  
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(360deg);
+  }
+}
+
+.auth-button:hover {
+    color: #006398;
+    border: 1px solid #006398;
+    box-shadow: 2px 2px 20px #AFE9FF;
+}
+
+.cancel{
+    background-color: red;
+    padding: 2%;
+}
+
+.auth-input{
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid #fff;
+  box-shadow: 2px 2px 5px #AFE9FF;
+  transition-duration: 0.5s;
+  -webkit-transition-duration: 0.5s;
+  -moz-transition-duration: 0.5s;
+  padding: 5%;
+}
+
 .login-display{
     margin-left: auto;
     margin-right: auto;
@@ -18,7 +101,7 @@ body{
     margin-top: 25vh;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 25px;
+    border-radius: 10px;
 }
 
 #registration-div{

@@ -22,33 +22,35 @@
             </button>
         </span>
     </div>
+    <div id="spinner-div">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50"/>
+        </svg>
+    </div>
     <div id="auth-div" class="auth-container">
-        <div class="auth-main ">
-            <h2 class="login-display" >Welcome</h2>
+        <div class="auth-main">
+            <h2 class="login-display" ></h2>
             <form id="auth-id-form" method="post" name="myform">
                 <div class="login-display" id="login-div">
-                    <h2 class="login-display" >Login</h2>
-                    <label>User  :</label>
-                    <input type="text" name="username" id="shape-user" />
-                    <label>Pass :</label>
-                    <input type="password" name="password" id="shape-pass" />
-                    <input type="button" value="Login" id="login-submit-btn"  />
+                    <h2 class="login-display" ></h2>
+                    <input class="auth-input" type="text" name="username" id="shape-user" />
+                    <input class="auth-input" type="password" name="password" id="shape-pass" />
+                    <input class="auth-button" type="button" value="Login" id="login-submit-btn"  />
                 </div>
                 <div class="login-display" id="registration-div">
-                    <h2 class="login-display" >Create</h2>
-                    <label>User  :</label>
-                    <input type="text" name="username" id="shape-create-user" />
-                    <label>Pass :</label>
-                    <input type="password" name="password" id="shape-create-pass" />
-                    <input type="button" value="Create" id="create-submit-btn"  />
-            
+                    <h2 class="login-display" ></h2>
+                    <input class="auth-input" type="text" name="username" id="shape-create-user" />
+                    <input class="auth-input" type="password" name="password" id="shape-create-pass" />
+                    <input class="auth-button" type="button" value="Create" id="create-submit-btn"  />
                 </div>
                 <div class="login-display"   id="login-options">
-                          <input type="button" value="Login" id="login-btn" />
-                          <input type="button" value="Guest" id="guest-btn"/>
-                          <input type="button" value="Create" id="create-btn"/>
+                          <input class="auth-button" type="button" value="Login" id="login-btn" />
+                          <input class="auth-button" type="button" value="Guest" id="guest-btn"/>
+                          <input class="auth-button" type="button" value="Create" id="create-btn"/>
                 </div>
-                <input class="login-display" style="display:none" type="button" value="<=" id="login-reset"/>
+                <button class="auth-button cancel" class="login-display" style="display:none" id="login-reset">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
           
             </form>
         </div>
