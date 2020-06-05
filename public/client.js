@@ -289,6 +289,7 @@ ideally here there is *0* business logic, not quite there
     function displayGame(){
         document.getElementById("media-pane").style.display = "block";
         document.getElementById("auth-div").style.display = "none";
+        document.getElementById("spinner-div").style.display = "none";
         if(!shapeGame) shapeGame= new squareGame(user, socket);
     }
     
