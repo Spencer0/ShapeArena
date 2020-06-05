@@ -191,7 +191,7 @@ ideally here there is *0* business logic, not quite there
              }else{
                 let delta = (Date.now() - lastFrameTimeStamp)/1000;
                 lastFrameTimeStamp = Date.now();
-                fps = int(1/delta);
+                fps = parseInt(1/delta);
                 fpsCheck();
              }
 
