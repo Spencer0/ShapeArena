@@ -33,6 +33,18 @@ function DBService(){
 
     }
 
+    this.saveMessage = function(user,message){
+        pool.query("insert into chat(message, username) values ('"+message+"','"+user+"')", (err, res) => {
+            if(err){
+                console.log("message error", err)
+                return false
+            }else{
+                return true
+            }
+            
+        });
+    }
+
     this.createUser = async function(username, password){
         
         await pool.query("insert into users(username, password) values ('"+username+"','"+password+"')", (err, res) => {

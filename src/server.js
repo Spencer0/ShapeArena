@@ -57,7 +57,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('message-event', (msg) => {
-        console.log("Message broadcasting", msg)
+        console.log("Message broadcasting", JSON.parse(msg)["user"], JSON.parse(msg)["value"] )
+        db.saveMessage(JSON.parse(msg)["user"], JSON.parse(msg)["value"] );
         io.emit('message-event', msg);
     });
 
