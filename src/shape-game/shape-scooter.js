@@ -270,7 +270,7 @@ function ShapeScooter(){
 
     this.collides = function(enemy,bullet){
         if(enemy.x < 100 && enemy.y < 100){
-            return
+            return false;
         }
         if(bullet.x >= enemy.x && bullet.x <= enemy.x + enemy.width ){
             if(bullet.y >= enemy.y && bullet.y <= enemy.y + enemy.height){
