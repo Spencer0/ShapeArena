@@ -12,6 +12,7 @@ ideally here there is *0* business logic, not quite there
     let trimColor = trimColors[Math.floor(Math.random() * trimColors.length)];
     let shapeGame;
     let activityCounter = undefined;
+    let currentTheme = "DARK";
 
 
         
@@ -31,6 +32,11 @@ ideally here there is *0* business logic, not quite there
         document.getElementById("new-trim-button").addEventListener("click", function(e){
             e.preventDefault();
             randomTrimColor();
+        });
+
+        document.getElementById("theme-button").addEventListener("click", function(e){
+            e.preventDefault();
+            toggleTheme();
         });
 
         document.getElementById("chat-input-form").addEventListener("submit", function(e){
@@ -66,6 +72,22 @@ ideally here there is *0* business logic, not quite there
         }
 
     });
+
+    function toggleTheme(){
+        if(currentTheme === "DARK"){
+            document.getElementById("day-icon").style.display = "none";
+            document.getElementById("night-icon").style.display = "block";
+            document.body.style.color = "black";
+            document.body.style.backgroundColor =  "rgb(220, 220, 220)";
+            currentTheme = "LIGHT"
+        }else{
+            document.body.style.color = "white";
+            document.body.style.backgroundColor =  "rgb(38, 38, 38)";
+            document.getElementById("day-icon").style.display = "block";
+            document.getElementById("night-icon").style.display = "none";
+            currentTheme = "DARK"
+        }
+    }
 
     function pingCheck(){
         let ping = Date.now()
@@ -275,7 +297,7 @@ ideally here there is *0* business logic, not quite there
             newChatMessageEvent(JSON.parse(msg));
             scrollChatDiv();
         });
-
+        pingCheck();
         connectToGame();
     }
 

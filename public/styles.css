@@ -1,8 +1,7 @@
 *{
     font-family: sans-serif;
-    
-
 }
+
 body{
     background-color: rgb(38, 38, 38);
     color: white;
@@ -13,6 +12,7 @@ body{
     margin-right: auto;
     text-align: center;
 }
+
 #auth-div{
     width: 40em;
     margin-top: 25vh;
@@ -33,14 +33,17 @@ canvas {
     left: 0;
     position: absolute;
 }
+
 #canvases{
     position: relative;
 }
+
 #ping-display{
     margin: 0;
     top:-2em; 
     position: absolute;
 }
+
 #top-bar{
     color: black;
     top: 0;
@@ -71,6 +74,7 @@ canvas {
 #shape-arena-background-canvas{
     background-color: black;
 }
+
 #chat{
     color: black;
     position: absolute;
@@ -80,13 +84,17 @@ canvas {
     height: 100%;
     background-color: antiquewhite;
 }
+
 #trim-button-container{
     padding: 1em;
 }
-#new-trim-button{
+
+.top-right-button{
     float: right;
     margin: 1em;
+    white-space: nowrap;
 }
+
 
 #bottom-bar{
     color: black;
