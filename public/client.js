@@ -45,7 +45,7 @@ ideally here there is *0* business logic, not quite there
             userInput.value = "";
         });
     
-        document.getElementById("chat-input") .addEventListener("click", function(event) { 
+        document.getElementById("chat-input").addEventListener("click", function(event) { 
             event.preventDefault() ;
         });
     
@@ -57,21 +57,24 @@ ideally here there is *0* business logic, not quite there
         document.getElementById("create-submit-btn").onclick = createAccount;
         document.getElementById("login-reset").onclick = showLoginOptions;
 
-        function randomTrimColor(){
-                let letters = '6789ABCDEF';
-                let color = '#';
-                for (var i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * letters.length)];
-                }
-                document.getElementById("top-bar").style.backgroundColor = color;
-                document.getElementById("chat").style.backgroundColor = color;
-                document.getElementById("bottom-bar").style.backgroundColor = color;
-                document.getElementById("tint-btn-icon").style.color = color;
-    
-                return color;
-        }
+     
 
     });
+
+    function randomTrimColor(){
+        let letters = '6789ABCDEF';
+        let color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * letters.length)];
+        }
+        document.getElementById("top-bar").style.backgroundColor = color;
+        document.getElementById("chat").style.backgroundColor = color;
+        document.getElementById("bottom-bar").style.backgroundColor = color;
+        document.getElementById("tint-btn-icon").style.color = color;
+        document.getElementById("auth-div").style.border = color + " 10px solid";
+
+        return color;
+    }
 
     function toggleTheme(){
         if(currentTheme === "DARK"){
