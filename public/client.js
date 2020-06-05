@@ -13,6 +13,8 @@ ideally here there is *0* business logic, not quite there
     let shapeGame;
     let activityCounter = undefined;
     let currentTheme = "DARK";
+    let lastFrameTimeStamp;
+    let fps;
 
 
         
@@ -100,6 +102,10 @@ ideally here there is *0* business logic, not quite there
         });
     }
 
+    function fpsCheck(){
+        document.getElementById("fps-display").innerText = "FPS: " + fps; 
+    }
+
     function scrollChatDiv(){
         var div = document.getElementById("chat-display");
         if(div) div.scrollTop = div.scrollHeight - div.clientHeight;
@@ -176,6 +182,20 @@ ideally here there is *0* business logic, not quite there
         }
 
         this.drawState = function(state){
+
+
+            if(!lastFrameTimeStamp) {
+
+                lastFrameTimeStamp = Date.now();
+                fps = 0;
+             }else{
+                let delta = (Date.now() - lastFrameTimeStamp)/1000;
+                lastFrameTimeStamp = Date.now();
+                fps = int(1/delta);
+                fpsCheck();
+             }
+
+
 
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
@@ -379,6 +399,10 @@ ideally here there is *0* business logic, not quite there
         }
     }
 
+    setInterval(() => {
+        pingCheck();
+        
+    }, 1000 )
     
 
 })(window)
