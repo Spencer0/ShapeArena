@@ -84,8 +84,7 @@ io.on('connection', (socket) => {
 setInterval(() => {
 
     //Simulate the game server side 
-    shapescooter.updateProjectilePositions();
-    shapescooter.updateEnemyPositions();
+    shapescooter.update();
 
     //Save the players who leveled up
     shapescooter.save(db);

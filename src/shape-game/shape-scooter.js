@@ -1,9 +1,21 @@
 const gameWorldHeight = 1200;
 const gameWorldWidth = 1600;
 const canvasPadding = 25;
-const enemyFactory = require('./enemy/enemy-factory');
+const enemyManager = require('./enemy/enemy-manager');
+const bulletManager = require('./projectile/bullet-manager');
+
+//Heading twoards 
+//DB manager [Save player, load player]
+//Player manager [Update, newPlayer(user... )] - player factory 
+//Bullet manager [Update] - enemy factory
+//Enemy manager [Update] - 
+//Hitbox manager [Update]
+//State manager [Update]
 
 function ShapeScooter(){
+
+    //Entity Managers
+    this.enemyManager = enemyManager;
 
     //This is whats needed to be sent to the view for a proper render 
     this.clientState = {
@@ -12,14 +24,22 @@ function ShapeScooter(){
         shooting: false,
         enemyCount: 0,
 		enemyIncId: 0,
-        activeUsers: 0
+        activeUsers: 0,
+        gameWorldHeight: 1200,
+        gameWorldWidth: 1600
     }
 
     //This is everything else 
     this.serverState = {
         player: {},
     }
+
     let self = this;
+
+    this.update = () => {
+        this.updateProjectilePositions();
+        this.enemyManager.update(this.clientState);
+    }
 
     this.newPlayer =  async function(socketId, userName, db){
         if(!userName){return}
@@ -105,11 +125,6 @@ function ShapeScooter(){
         this.shooting = true;
     }
 
-    this.newEnemy = function(){
-        this.clientState.enemies[this.clientState.enemyIncId] = enemyFactory('Brown', 1);
-        this.clientState.enemyCount++;
-		this.clientState.enemyIncId++;
-    }
 
     this.removePlayer = function(socketId){
         delete this.clientState.player[socketId];
@@ -242,18 +257,6 @@ function ShapeScooter(){
         player.bulletLifespan = 300;
         player.level = 1; 
     }
-
-    this.updateEnemyPositions = function(){
-        for(enemyId of Object.keys(this.clientState.enemies)){
-            let enemy = this.clientState.enemies[enemyId];
-            enemy.x += 1;
-            enemy.y += 1;
-            if(enemy.x >= gameWorldWidth || enemy.y >= gameWorldHeight ){
-                this.clientState.enemyCount--;
-                delete this.clientState.enemies[enemyId]
-            }
-        }
-    }
     
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x - bullet.x
@@ -323,14 +326,12 @@ function ShapeScooter(){
         return true; 
     }
 
+    //If there are players on the map, every second try to spawn an enemy 
     setInterval(() => {
         if(Object.keys(this.clientState.player).length !== 0){
-            
-            if(this.clientState.enemyCount < 10){
-                this.newEnemy();
-            }
+                this.enemyManager.enemySpawner(this.clientState);
         }
-    }, 5000);
+    }, 1000);
 }
 
 module.exports = ShapeScooter;

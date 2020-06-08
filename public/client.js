@@ -14,7 +14,9 @@ ideally here there is *0* business logic, not quite there
     let activityCounter = undefined;
     let currentTheme = "DARK";
     let lastFrameTimeStamp;
-    let fps;
+    let fpsUpdateTimer = Date.now();
+    let fps = 0;
+    let spinner = false;
 
 
         
@@ -96,6 +98,7 @@ ideally here there is *0* business logic, not quite there
 
     function pingCheck(){
         let ping = Date.now()
+        if(!socket){return}
         socket.emit('latency', function () {
             latency = Date.now() - ping;
             document.getElementById("ping-display").innerText = "Ping: " + latency; 
@@ -103,7 +106,7 @@ ideally here there is *0* business logic, not quite there
     }
 
     function fpsCheck(){
-        document.getElementById("fps-display").innerText = "FPS: " + fps; 
+            document.getElementById("fps-display").innerText = "FPS: " + fps; 
     }
 
     function scrollChatDiv(){
@@ -192,7 +195,6 @@ ideally here there is *0* business logic, not quite there
                 let delta = (Date.now() - lastFrameTimeStamp)/1000;
                 lastFrameTimeStamp = Date.now();
                 fps = parseInt(1/delta);
-                fpsCheck();
              }
 
 
@@ -290,7 +292,6 @@ ideally here there is *0* business logic, not quite there
         document.getElementById("media-pane").style.display = "block";
         document.getElementById("auth-div").style.display = "none";
         document.getElementById("spinner-div").style.display = "none";
-        if(!shapeGame) shapeGame= new squareGame(user, socket);
     }
     
     function guestLogin(){
@@ -328,15 +329,20 @@ ideally here there is *0* business logic, not quite there
     }
 
     function displaySpinner(){
+        spinner = true;
         document.getElementById("auth-div").style.display = "none";
         document.getElementById("spinner-div").style.display = "block";
     }
 
     function connectToGame(){
-        displayGame();
-
+        if(!shapeGame) shapeGame= new squareGame(user, socket);
         socket.on('state', function (state) {
             if(!shapeGame || !state) { return }
+            if(spinner){
+            
+                displayGame();
+                spinner = false;
+            }
             shapeGame.drawState(state);
         });
     }
@@ -410,6 +416,7 @@ ideally here there is *0* business logic, not quite there
 
     setInterval(() => {
         pingCheck();
+        fpsCheck();
         
     }, 1000 )
     
