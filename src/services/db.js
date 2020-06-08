@@ -66,7 +66,7 @@ function DBService(){
                         ON CONFLICT (username) DO UPDATE SET (username, color, level, x, y) = \
                         (EXCLUDED.username, EXCLUDED.color, EXCLUDED.level, EXCLUDED.x, EXCLUDED.y)", (err, res) => {
             if(err){
-                console.log("creation error", err)
+                console.log("creation error", err.detail)
                 return false
             }else{
                 console.log(player.user + " has been saved at level " + player.level)
@@ -83,7 +83,6 @@ function DBService(){
                 console.log("creation error", err)
                 return cb(username, socketId, null)
             }else{
-                console.log("found em ", username)
                 return cb(username, socketId, res.rows[0])
             }
         });

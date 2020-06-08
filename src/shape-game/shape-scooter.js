@@ -28,7 +28,6 @@ function ShapeScooter(){
     }
 
     this.spawnPlayer = function(userName, socketId, player){
-        console.log(player, this, self)
         
         if(player){
             //console.log(tryLoadedPlayer)
