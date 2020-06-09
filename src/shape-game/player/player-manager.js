@@ -49,7 +49,36 @@ const spawnPlayer = function(state, userName, socketId, player){
     
 }
 
-powerLevelPlayer = function(player){
+const updatePlayerPosition = function(state, input, id){
+    let directionString = Object.keys(input).join("");
+    let directionCount = directionString.length;
+    let player = state.player[id];
+    if(!player){return}
+    while(directionCount--){
+        switch(directionString.charAt(directionCount)){
+            case "w":
+                if(player.y <= state.canvasPadding){ continue }
+                player.y -= player.speed;
+                break;
+            case "a":
+                if(player.x <= state.canvasPadding){ continue }
+                player.x -= player.speed;
+                break;
+            case "s":
+                if(player.y >= state.gameWorldHeight- state.canvasPadding){ continue }
+                player.y += player.speed;
+                break;
+            case "d":
+                if(player.x >= state.gameWorldWidth - state.canvasPadding){ continue }
+                player.x += player.speed;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+const powerLevelPlayer = function(player){
     console.log("leveling", player.level)
     for(let i = 0; i < player.level; i++) {
         player.width *= 1.02;
@@ -83,3 +112,4 @@ function Player(color, life) {
 }
 
 module.exports.spawnPlayer = spawnPlayer;
+module.exports.updatePlayer = updatePlayerPosition;

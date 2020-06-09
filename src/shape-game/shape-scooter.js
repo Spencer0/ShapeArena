@@ -1,6 +1,4 @@
-const gameWorldHeight = 1200;
-const gameWorldWidth = 1600;
-const canvasPadding = 25;
+
 const enemyManager = require('./enemy/enemy-manager');
 const bulletManager = require('./projectile/bullet-manager');
 const playerManager = require('./player/player-manager');
@@ -12,15 +10,12 @@ const playerManager = require('./player/player-manager');
 //Hitbox manager [Update]
 //State manager [Update]
 
+ 
 function ShapeScooter(){
 
-    //Entity Managers
     this.enemyManager = enemyManager;
-
-    //Player manager
     this.playerManager = playerManager;
 
-    //This is whats needed to be sent to the view for a proper render 
     this.clientState = {
         player: {},
         enemies: {},
@@ -29,7 +24,8 @@ function ShapeScooter(){
 		enemyIncId: 0,
         activeUsers: 0,
         gameWorldHeight: 1200,
-        gameWorldWidth: 1600
+        gameWorldWidth: 1600,
+        canvasPadding: 25
     }
 
     let self = this;
@@ -74,41 +70,12 @@ function ShapeScooter(){
         this.shooting = true;
     }
 
-
     this.removePlayer = function(socketId){
         delete this.clientState.player[socketId];
     }
 
-    
-
-
-    this.updatePlayerPosition = function(input, id){
-        let directionString = Object.keys(input).join("");
-        let directionCount = directionString.length;
-        let player = this.clientState.player[id];
-        if(!player){return}
-        while(directionCount--){
-            switch(directionString.charAt(directionCount)){
-                case "w":
-                    if(player.y <= canvasPadding){ continue }
-                    player.y -= player.speed;
-                    break;
-                case "a":
-                    if(player.x <= canvasPadding){ continue }
-                    player.x -= player.speed;
-                    break;
-                case "s":
-                    if(player.y >= gameWorldHeight-canvasPadding){ continue }
-                    player.y += player.speed;
-                    break;
-                case "d":
-                    if(player.x >= gameWorldWidth - canvasPadding){ continue }
-                    player.x += player.speed;
-                    break;
-                default:
-                    break;
-            }
-        }
+    this.handleKeyboardInput = function(input, id){
+        this.playerManager.updatePlayer(this.clientState, input, id);
     }
 
     this.updateProjectilePositions = function(){
@@ -169,7 +136,6 @@ function ShapeScooter(){
         }
     }
     
-
     this.levelUp = function(playerId, levels) {
         let player = this.clientState.player[playerId];
         player.shouldSave = true;
@@ -183,8 +149,6 @@ function ShapeScooter(){
             player.level += 1;
         }
     }
-    
-   
 
     this.save = function(db){
         for(playerId of Object.keys(this.clientState.player)){
@@ -282,5 +246,6 @@ function ShapeScooter(){
         }
     }, 1000);
 }
+
 
 module.exports = ShapeScooter;

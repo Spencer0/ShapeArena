@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('keyboard-input', (data) => {
-        shapescooter.updatePlayerPosition(data, socket.id)
+        shapescooter.handleKeyboardInput(data, socket.id)
     });
 
     socket.on('mouse-input', (data) => {
