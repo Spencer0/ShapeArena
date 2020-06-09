@@ -17,7 +17,6 @@ const enemySpawner = (state) => {
         state.enemies[state.enemyIncId] = enemyFactory('Brown', 1);
         state.enemyCount++;
         state.enemyIncId++;
-        console.log("Spawning new enemy", "current count :" + state.enemyCount)
 }
 
 

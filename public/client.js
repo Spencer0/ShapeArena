@@ -186,7 +186,6 @@ ideally here there is *0* business logic, not quite there
 
         this.drawState = function(state){
 
-
             if(!lastFrameTimeStamp) {
 
                 lastFrameTimeStamp = Date.now();
@@ -214,6 +213,7 @@ ideally here there is *0* business logic, not quite there
                 if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
                 }
+                if(!player.bullets) {continue;}
                 for(bulletId of Object.keys(player.bullets)){
                     let bullet = player.bullets[bulletId]
                     this.context.beginPath();
@@ -309,6 +309,7 @@ ideally here there is *0* business logic, not quite there
     }
 
     function processLoginResponse(data){
+    
         connectToServer();
     }
     
@@ -370,8 +371,7 @@ ideally here there is *0* business logic, not quite there
     }
 
     function standardLogin(){
-        console.log(document.getElementById("shape-user").value, 
-                    document.getElementById("shape-pass").value);
+        displaySpinner();
     
         let tryPass = document.getElementById("shape-pass").value;
         let tryUser = document.getElementById("shape-user").value;

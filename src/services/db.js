@@ -60,13 +60,12 @@ function DBService(){
     }
 
     this.saveUser = async function(player){
-        
         await pool.query("insert into characters(x, y, username, color, level) values \
-                        ('"+player.x+"','"+player.y+"','"+player.user+"','"+player.color+"','"+player.level+"') \
+                        ('"+parseInt(player.x)+"','"+parseInt(player.y)+"','"+player.user+"','"+player.color+"','"+player.level+"') \
                         ON CONFLICT (username) DO UPDATE SET (username, color, level, x, y) = \
                         (EXCLUDED.username, EXCLUDED.color, EXCLUDED.level, EXCLUDED.x, EXCLUDED.y)", (err, res) => {
             if(err){
-                console.log("creation error", err.detail)
+                console.log("creation error", err.detail, player.user, player.level, err)
                 return false
             }else{
                 console.log(player.user + " has been saved at level " + player.level)
@@ -76,14 +75,14 @@ function DBService(){
         });
     }
 
-    this.loadUser =  async function(username, socketId, cb){
-        console.log(username, socketId, cb)
+    this.loadUser =  async function(state, username, socketId, cb){
         return await pool.query("select * from characters where username='"+username+"'", (err, res) => {
             if(err){
                 console.log("creation error", err)
-                return cb(username, socketId, null)
+                return cb(state, username, socketId, null)
             }else{
-                return cb(username, socketId, res.rows[0])
+                console.log("Loaded user ", username, " on socketID ", socketId)
+                return cb(state, username, socketId, res.rows[0])
             }
         });
     }

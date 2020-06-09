@@ -3,12 +3,12 @@ const gameWorldWidth = 1600;
 const canvasPadding = 25;
 const enemyManager = require('./enemy/enemy-manager');
 const bulletManager = require('./projectile/bullet-manager');
+const playerManager = require('./player/player-manager');
 
 //Heading twoards 
 //DB manager [Save player, load player]
 //Player manager [Update, newPlayer(user... )] - player factory 
 //Bullet manager [Update] - enemy factory
-//Enemy manager [Update] - 
 //Hitbox manager [Update]
 //State manager [Update]
 
@@ -16,6 +16,9 @@ function ShapeScooter(){
 
     //Entity Managers
     this.enemyManager = enemyManager;
+
+    //Player manager
+    this.playerManager = playerManager;
 
     //This is whats needed to be sent to the view for a proper render 
     this.clientState = {
@@ -29,11 +32,6 @@ function ShapeScooter(){
         gameWorldWidth: 1600
     }
 
-    //This is everything else 
-    this.serverState = {
-        player: {},
-    }
-
     let self = this;
 
     this.update = () => {
@@ -43,80 +41,31 @@ function ShapeScooter(){
 
     this.newPlayer =  async function(socketId, userName, db){
         if(!userName){return}
-        db.loadUser(userName, socketId, this.spawnPlayer)
-
+        db.loadUser(this.clientState, userName, socketId, self.playerManager.spawnPlayer)
     }
 
-    this.spawnPlayer = function(userName, socketId, player){
-        
-        if(player){
-            //console.log(tryLoadedPlayer)
-            self.clientState.player[socketId] = {
-                x: player.x,
-                y: player.y,
-                width: 4,
-                height: 12,
-                color: player.color,
-                id: socketId,
-                user: userName,
-                bullets: {},
-                bulletCount: 0,
-                bulletIncId: 0,
-                bulletRadius: 1,
-                bulletLifespan: 50,
-                level: player.level,
-                speed: 3,
-            }
-
-            self.serverState.player[socketId] = {
-                id: socketId,
-                user: userName,
-                shouldSave: false,
-            }
-
-        }else{
-            //console.log(tryLoadedPlayer)
-            self.clientState.player[socketId] = {
-                x: 15,
-                y: 15,
-                width: 4,
-                height: 12,
-                color: self.randomColor(),
-                id: socketId,
-                user: userName,
-                bullets: {},
-                bulletCount: 0,
-                bulletIncId: 0,
-                bulletRadius: 1,
-                bulletLifespan: 50,
-                level: 1,
-                speed: 3,
-            }
-
-            self.serverState.player[socketId] = {
-                id: socketId,
-                user: userName,
-                shouldSave: false,
-            }
-        }
-        
-    }
 
     this.newProjectile = function(mouse, socketId){
         let bulletsPlayer = this.clientState.player[socketId];
         if(!bulletsPlayer) { return }
+        if(!bulletsPlayer.bullets) { return }
         if(bulletsPlayer.bulletCount >= 10) { return }
         bulletsPlayer.bullets[bulletsPlayer.bulletIncId] = {
                 x: bulletsPlayer.x,
                 y: bulletsPlayer.y,
                 width: bulletsPlayer.bulletRadius,
                 height: 1,
-                direction: { 
+                destination: { 
                     x: mouse.x, 
                     y: mouse.y, 
                 },
+                direction: { 
+                    x: mouse.x - bulletsPlayer.x, 
+                    y: mouse.y - bulletsPlayer.y, 
+                },
                 lifespan: bulletsPlayer.bulletLifespan,
                 currentLife: bulletsPlayer.bulletLifespan,
+                speed: bulletsPlayer.bulletSpeed,
                 color: bulletsPlayer.color,
                 id: bulletsPlayer.bulletIncId,
         }
@@ -128,13 +77,9 @@ function ShapeScooter(){
 
     this.removePlayer = function(socketId){
         delete this.clientState.player[socketId];
-        delete this.serverState.player[socketId];
     }
 
-    this.randomColor = function() {
-        let trimColors = ['red', 'black', 'white', 'orange', 'blue', 'yellow', 'aqua', 'navyblue', 'purple', 'pink']
-        return trimColors[Math.floor(Math.random() * trimColors.length)];
-    }
+    
 
 
     this.updatePlayerPosition = function(input, id){
@@ -227,22 +172,26 @@ function ShapeScooter(){
 
     this.levelUp = function(playerId, levels) {
         let player = this.clientState.player[playerId];
-        this.serverState.player[playerId].shouldSave = true;
+        player.shouldSave = true;
         for(let i = 0; i < levels; i++) {
-            player.width *= 1.1;
-            player.height *= 1.1;
-            player.bulletRadius += 0.2;
-            player.bulletLifespan += 1;
+            player.width *= 1.02;
+            player.height *= 1.02;
+            player.bulletRadius += 0.05;
+            player.bulletLifespan += 3;
+            player.speed += 0.1;
+            player.bulletSpeed += 0.2;
             player.level += 1;
         }
     }
     
+   
+
     this.save = function(db){
-        for(playerId of Object.keys(this.serverState.player)){
-            if(this.serverState.player[playerId].shouldSave){
+        for(playerId of Object.keys(this.clientState.player)){
+            if(this.clientState.player[playerId].shouldSave){
                 console.log("attempting to save")
                 db.saveUser(this.clientState.player[playerId])
-                this.serverState.player[playerId].shouldSave = false
+                this.clientState.player[playerId].shouldSave = false
             }
         }
     }
@@ -259,14 +208,14 @@ function ShapeScooter(){
     }
     
     this.updateBulletPosition = function(bullet){
-        let xMovement = bullet.direction.x - bullet.x
-        let yMovement = bullet.direction.y - bullet.y 
+        let xMovement = bullet.direction.x 
+        let yMovement = bullet.direction.y
         if(xMovement > 0){
-            bullet.x += Math.cos(yMovement/ xMovement);
-            bullet.y += Math.sin(yMovement/ xMovement);
+            bullet.x +=  ( Math.cos(yMovement/ xMovement) * bullet.speed )
+            bullet.y += ( Math.sin(yMovement/ xMovement) * bullet.speed )
         }else{
-            bullet.x -= Math.cos(yMovement/ xMovement);
-            bullet.y -= Math.sin(yMovement/ xMovement);
+            bullet.x -= ( Math.cos(yMovement/ xMovement) * bullet.speed )
+            bullet.y -= ( Math.sin(yMovement/ xMovement) * bullet.speed )
         }
     }
 
