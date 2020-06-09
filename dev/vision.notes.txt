@@ -1,12 +1,15 @@
+
 ---Shape Arena vision---
 * A "brutal" game where you lose all progress on death
 * ship shooter style gameplay
 * incentive to kill creeps before pvping 
 
+
 ----- Gameplay loop -----
 spawn at graveyard [Middle? top corner?] as a triangle
 kill other ships [Players or NPCs] to gain $$$$$$
 spend $$$$$ on upgrades at a shop you fly to [the "Garage"] 
+
 
 ---- SHOP ---- 
 bullet upgrades make your bullets increase size, speed, or distance 
@@ -16,9 +19,13 @@ ship upgrades make your ship increase speed, max health, regen rate
 
 
 
+
+
+
 The game code itself needs to become more robust, this makes me a little concerend about no typescript
 
 
-I don't like the current client state / server state seperation. 
+
+I don't like the current client state / server state seperation.
 Lets try to make this more reasonably by having a single state, 
 and use an extraction and emit function to filter the data the client needs
