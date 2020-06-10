@@ -20,9 +20,14 @@ ship upgrades make your ship increase speed, max health, regen rate
 
 
 
+the errors thrown around trying to save a guest need a solution. 
+Who should reject this save? the webserver should have a  guestlist
+
 
 
 The game code itself needs to become more robust, this makes me a little concerend about no typescript
+
+
 
 
 

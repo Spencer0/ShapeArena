@@ -23,8 +23,8 @@ function ShapeScooter(){
         enemyCount: 0,
 		enemyIncId: 0,
         activeUsers: 0,
-        gameWorldHeight: 1200,
-        gameWorldWidth: 1600,
+        gameWorldHeight: 10000,
+        gameWorldWidth: 10000,
         canvasPadding: 25
     }
 
@@ -64,6 +64,7 @@ function ShapeScooter(){
                 speed: bulletsPlayer.bulletSpeed,
                 color: bulletsPlayer.color,
                 id: bulletsPlayer.bulletIncId,
+                parentId: bulletsPlayer.id,
         }
         bulletsPlayer.bulletCount++;
         bulletsPlayer.bulletIncId++;
@@ -105,10 +106,10 @@ function ShapeScooter(){
                 
                 //Check collisions
                 for(playerIdInternal of Object.keys(this.clientState.player)){
-                    if(bullet.color !== this.clientState.player[playerIdInternal].color){
+                    if(bullet.parentId !== this.clientState.player[playerIdInternal].id){
                         if(this.collides(this.clientState.player[playerIdInternal], bullet)){
-                            this.respawnPlayer(playerIdInternal);
-                            this.levelUp(playerId, 2);
+                            this.playerManager.levelPlayer(this.clientState.player[playerId], Math.sqrt(this.clientState.player[playerIdInternal].level));
+                            this.playerManager.hurtPlayer(this.clientState.player[playerIdInternal], this.clientState.player[playerId].bulletDamage);
                             if(typeof io === 'undefined') { return }
                             io.sockets.emit('state', this.clientState);
                         }
@@ -123,7 +124,7 @@ function ShapeScooter(){
                         if(this.clientState.enemies[enemyId].life === 0){
                             delete this.clientState.enemies[enemyId] 
                             this.clientState.enemyCount--;
-                            this.levelUp(playerId, 1);
+                            this.playerManager.levelPlayer(this.clientState.player[playerId], 1);
                         }else{
                             this.clientState.enemies[enemyId].life--;
                         }
@@ -136,19 +137,6 @@ function ShapeScooter(){
         }
     }
     
-    this.levelUp = function(playerId, levels) {
-        let player = this.clientState.player[playerId];
-        player.shouldSave = true;
-        for(let i = 0; i < levels; i++) {
-            player.width *= 1.02;
-            player.height *= 1.02;
-            player.bulletRadius += 0.05;
-            player.bulletLifespan += 3;
-            player.speed += 0.1;
-            player.bulletSpeed += 0.2;
-            player.level += 1;
-        }
-    }
 
     this.save = function(db){
         for(playerId of Object.keys(this.clientState.player)){
@@ -160,17 +148,6 @@ function ShapeScooter(){
         }
     }
 
-    this.respawnPlayer = function( playerId ) {
-        let player = this.clientState.player[playerId];
-        player.x = 30;
-        player.y = 30;
-        player.width = 35;
-        player.height = 20;
-        player.bulletRadius = 5;
-        player.bulletLifespan = 300;
-        player.level = 1; 
-    }
-    
     this.updateBulletPosition = function(bullet){
         let xMovement = bullet.direction.x 
         let yMovement = bullet.direction.y

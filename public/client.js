@@ -136,10 +136,10 @@ ideally here there is *0* business logic, not quite there
         this.canvas  = document.getElementById('shape-arena-canvas');
         this.backgroundCanvas = document.getElementById('shape-arena-background-canvas')
         this.backgroundContext = this.backgroundCanvas.getContext('2d');
-        this.canvas.height = 1200;
-        this.canvas.width = 1600;
-        this.backgroundCanvas.height = 1200;
-        this.backgroundCanvas.width = 1600;
+        this.canvas.height = 10000;
+        this.canvas.width = 10000;
+        this.backgroundCanvas.height = 10000;
+        this.backgroundCanvas.width = 10000;
         this.context = this.canvas.getContext('2d');
         this.keysCurrentlyDown = {};
         this.newKeyInput = false;
@@ -197,7 +197,6 @@ ideally here there is *0* business logic, not quite there
              }
 
 
-
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for(key of Object.keys(state.player)){
                 let player = state.player[key]
@@ -207,9 +206,9 @@ ideally here there is *0* business logic, not quite there
                 this.context.fillRect(player.x,player.y,player.width,player.height);
                 this.context.stroke();
                 this.context.font = "16px sans sherif";
-                this.context.strokeStyle = "white";
-                this.context.fillStyle = "white";
-                this.context.fillText(player.user + "("+ player.level + ")", player.x , player.y + player.height + 15 );
+                this.context.strokeStyle = player.color;
+                this.context.fillStyle = player.color;
+                this.context.fillText(player.user + " - "+ player.level + "", player.x - 15, player.y + player.height + 15 );
                 if(player.id == this.socket.id){
                     this.updateCamera(player.x, player.y);
                 }

@@ -1,5 +1,3 @@
-
-
 const spawnPlayer = function(state, userName, socketId, player){
     console.log("spawning player")
     if(player){
@@ -8,7 +6,7 @@ const spawnPlayer = function(state, userName, socketId, player){
             x: player.x,
             y: player.y,
             width: 4,
-            height: 12,
+            height: 8,
             color: player.color,
             id: socketId,
             user: userName,
@@ -16,10 +14,12 @@ const spawnPlayer = function(state, userName, socketId, player){
             bulletCount: 0,
             bulletIncId: 0,
             bulletRadius: 1,
-            bulletLifespan: 50,
-            bulletSpeed: 1,
-            level: player.level,
-            speed: 3,
+            bulletLifespan: 12,
+            bulletSpeed: 3,
+            bulletDamage: 1,
+            health: 1,
+            level: 1,
+            speed: 2,
             shouldSave: false,
         }
         powerLevelPlayer(returningPlayer);
@@ -31,7 +31,7 @@ const spawnPlayer = function(state, userName, socketId, player){
             x: 15,
             y: 15,
             width: 4,
-            height: 12,
+            height: 8,
             color: randomColor(),
             id: socketId,
             user: userName,
@@ -39,10 +39,12 @@ const spawnPlayer = function(state, userName, socketId, player){
             bulletCount: 0,
             bulletIncId: 0,
             bulletRadius: 1,
-            bulletLifespan: 50,
-            bulletSpeed: 1,
+            bulletLifespan: 12,
+            bulletSpeed: 3,
+            health: 1,
             level: 1,
-            speed: 3,
+            bulletDamage: 1,
+            speed: 2,
             shouldSave: false,
         }
     }
@@ -84,9 +86,41 @@ const powerLevelPlayer = function(player){
         player.width *= 1.02;
         player.height *= 1.02;
         player.bulletRadius += 0.05;
-        player.bulletLifespan += 3;
+        player.bulletLifespan += 1;
         player.speed += 0.1;
-        player.bulletSpeed += 0.2;
+        player.bulletSpeed += 0.12;
+    }
+}
+
+const levelUp = function(player, levels) {
+    player.shouldSave = true;
+    for(let i = 0; i < levels; i++) {
+        player.width *= 1.02;
+        player.height *= 1.02;
+        player.bulletRadius += 0.05;
+        player.bulletLifespan += 1;
+        player.speed += 0.1;
+        player.bulletSpeed += 0.12;
+        player.level += 1;
+    }
+}
+
+const respawnPlayer = function( player ) {
+    player.x = 30;
+    player.y = 30;
+    player.width = 4;
+    player.height = 8;
+    player.health = 1;
+    player.bulletRadius = 1;
+    player.bulletLifespan = 12;
+    player.bulletSpeed = 3;
+    player.level = Math.sqrt(player); 
+}
+
+const hurtPlayer = function( player, damage ) {
+    player.health -= damage;
+    if(player.health <= 0){
+        respawnPlayer(player);
     }
 }
 
@@ -111,5 +145,7 @@ function Player(color, life) {
     this.life = life;
 }
 
+module.exports.levelPlayer = levelUp;
 module.exports.spawnPlayer = spawnPlayer;
+module.exports.hurtPlayer = hurtPlayer;
 module.exports.updatePlayer = updatePlayerPosition;
