@@ -21,6 +21,7 @@ const spawnPlayer = function(state, userName, socketId, player){
             level: 1,
             speed: 2,
             shouldSave: false,
+            inShop: false
         }
         powerLevelPlayer(returningPlayer);
         state.player[socketId] = returningPlayer;
@@ -46,6 +47,7 @@ const spawnPlayer = function(state, userName, socketId, player){
             bulletDamage: 1,
             speed: 2,
             shouldSave: false,
+            inShop: false
         }
     }
     
@@ -78,8 +80,21 @@ const updatePlayerPosition = function(state, input, id){
                 break;
         }
     }
-}
 
+    if(isInShop(player, state.shop)){
+        if(!player.inShop == true) { console.log("In shop") }
+        player.inShop = true;
+    }else{
+        if(!player.inShop == false) { console.log("leaving shop") }
+        player.inShop = false;
+    }
+}
+function isInShop(player, shop){
+    if(player.x <= shop.x + shop.width && player.x >= shop.x && player.y >= shop.y && player.y <= shop.y + shop.height){
+        return true;
+    }
+    return false;
+}
 const powerLevelPlayer = function(player){
     console.log("leveling", player.level)
     for(let i = 0; i < player.level; i++) {
@@ -114,7 +129,7 @@ const respawnPlayer = function( player ) {
     player.bulletRadius = 1;
     player.bulletLifespan = 12;
     player.bulletSpeed = 3;
-    player.level = Math.sqrt(player); 
+    player.level = Math.sqrt(player.level); 
 }
 
 const hurtPlayer = function( player, damage ) {

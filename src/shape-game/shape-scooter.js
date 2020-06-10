@@ -25,6 +25,18 @@ function ShapeScooter(){
         activeUsers: 0,
         gameWorldHeight: 10000,
         gameWorldWidth: 10000,
+        shop: {
+            x: 400,
+            y: 500,
+            width: 200,
+            height: 100,
+        },
+        graveyard: {
+            x: 0,
+            y: 0,
+            widith: 100,
+            height: 100,
+        },
         canvasPadding: 25
     }
 
@@ -159,16 +171,33 @@ function ShapeScooter(){
             bullet.y -= ( Math.sin(yMovement/ xMovement) * bullet.speed )
         }
     }
+   
 
     this.collides = function(enemy,bullet){
-        if(enemy.x < 100 && enemy.y < 100){
+        if(self.inSafeZone(enemy)){
             return false;
         }
+
         if(bullet.x >= enemy.x && bullet.x <= enemy.x + enemy.width ){
             if(bullet.y >= enemy.y && bullet.y <= enemy.y + enemy.height){
                 return true;
             }
         }
+        return false;
+    }
+
+    this.inSafeZone = function(enemy){
+        //Graveyard
+        if(enemy.x < 100 && enemy.y < 100){
+            return true;
+        }
+
+        //At the shop
+        let shop = self.clientState.shop;
+        if(enemy.x <= shop.x + shop.width && enemy.x >= shop.x && enemy.y >= shop.y && enemy.y <= shop.y + shop.height){
+            return true;
+        }
+
         return false;
     }
 
