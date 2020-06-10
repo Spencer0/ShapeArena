@@ -23,8 +23,8 @@ function ShapeScooter(){
         enemyCount: 0,
 		enemyIncId: 0,
         activeUsers: 0,
-        gameWorldHeight: 1000,
-        gameWorldWidth: 1000,
+        gameWorldHeight: 1500,
+        gameWorldWidth: 1500,
         canvasPadding: 25
     }
 
