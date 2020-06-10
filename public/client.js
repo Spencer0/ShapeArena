@@ -136,10 +136,10 @@ ideally here there is *0* business logic, not quite there
         this.canvas  = document.getElementById('shape-arena-canvas');
         this.backgroundCanvas = document.getElementById('shape-arena-background-canvas')
         this.backgroundContext = this.backgroundCanvas.getContext('2d');
-        this.canvas.height = 10000;
-        this.canvas.width = 10000;
-        this.backgroundCanvas.height = 10000;
-        this.backgroundCanvas.width = 10000;
+        this.canvas.height = 1000;
+        this.canvas.width = 1000;
+        this.backgroundCanvas.height = 1000;
+        this.backgroundCanvas.width = 1000;
         this.context = this.canvas.getContext('2d');
         this.keysCurrentlyDown = {};
         this.newKeyInput = false;
