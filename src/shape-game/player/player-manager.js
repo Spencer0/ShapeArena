@@ -89,12 +89,14 @@ const updatePlayerPosition = function(state, input, id){
         player.inShop = false;
     }
 }
+
 function isInShop(player, shop){
     if(player.x <= shop.x + shop.width && player.x >= shop.x && player.y >= shop.y && player.y <= shop.y + shop.height){
         return true;
     }
     return false;
 }
+
 const powerLevelPlayer = function(player){
     console.log("leveling", player.level)
     for(let i = 0; i < player.level; i++) {

@@ -140,8 +140,6 @@ ideally here there is *0* business logic, not quite there
         this.shopContext = this.shopCanvas.getContext('2d');
         this.canvas.height = 10000;
         this.canvas.width = 10000;
-        this.shopCanvas.height = 500;
-        this.shopCanvas.width = 500;
         this.backgroundCanvas.height = 10000;
         this.backgroundCanvas.width = 10000;
         this.context = this.canvas.getContext('2d');
@@ -301,6 +299,20 @@ ideally here there is *0* business logic, not quite there
         }
 
         this.drawShop = function(){
+            this.shopCanvas.height = document.getElementById('shape-arena').clientHeight;
+            this.shopCanvas.width = document.getElementById('shape-arena').clientWidth;
+            var ship_button = {
+                x:250,
+                y:350,
+                width:200,
+                height:100
+            };
+            var bullet_button = {
+                x:250,
+                y:350,
+                width:200,
+                height:100
+            };
 
                 this.shopContext.beginPath();
                 this.shopContext.lineWidth = 5
