@@ -131,7 +131,7 @@ const respawnPlayer = function( player ) {
     player.bulletRadius = 1;
     player.bulletLifespan = 12;
     player.bulletSpeed = 3;
-    player.level = Math.sqrt(player.level); 
+    player.level = 1; 
 }
 
 const hurtPlayer = function( player, damage ) {
