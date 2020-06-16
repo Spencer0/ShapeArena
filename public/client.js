@@ -135,11 +135,13 @@ ideally here there is *0* business logic, not quite there
     function squareGame(user, socket){
         this.canvas  = document.getElementById('shape-arena-canvas');
         this.backgroundCanvas = document.getElementById('shape-arena-background-canvas')
+        this.shopCanvas = document.getElementById('shape-arena-shop-canvas')
         this.backgroundContext = this.backgroundCanvas.getContext('2d');
-        this.canvas.height = 1500;
-        this.canvas.width = 1500;
-        this.backgroundCanvas.height = 1500;
-        this.backgroundCanvas.width = 1500;
+        this.shopContext = this.shopCanvas.getContext('2d');
+        this.canvas.height = 10000;
+        this.canvas.width = 10000;
+        this.backgroundCanvas.height = 10000;
+        this.backgroundCanvas.width = 10000;
         this.context = this.canvas.getContext('2d');
         this.keysCurrentlyDown = {};
         this.newKeyInput = false;
@@ -198,6 +200,7 @@ ideally here there is *0* business logic, not quite there
 
 
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
             for(key of Object.keys(state.player)){
                 let player = state.player[key]
                 if(!player) {continue;}
@@ -282,9 +285,45 @@ ideally here there is *0* business logic, not quite there
             this.backgroundContext.strokeStyle =  "white";
             this.backgroundContext.rect(0, 0, 100, 100);
             this.backgroundContext.stroke();
+
+            //Draw shop
+            this.backgroundContext.beginPath();
+            this.backgroundContext.lineWidth = 5;
+            this.backgroundContext.strokeStyle =  "gold";
+            this.backgroundContext.rect(400, 500, 200, 100);
+            this.backgroundContext.stroke();
+            this.backgroundContext.font = "16px sans sherif";
+            this.backgroundContext.strokeStyle = "gold";
+            this.backgroundContext.fillStyle = "gold";
+            this.backgroundContext.fillText("SHOP", 500, 550 );
         }
 
+        this.drawShop = function(){
+            this.shopCanvas.height = document.getElementById('shape-arena').clientHeight;
+            this.shopCanvas.width = document.getElementById('shape-arena').clientWidth;
+            var ship_button = {
+                x:250,
+                y:350,
+                width:200,
+                height:100
+            };
+            var bullet_button = {
+                x:250,
+                y:350,
+                width:200,
+                height:100
+            };
+
+                this.shopContext.beginPath();
+                this.shopContext.lineWidth = 5
+                this.shopContext.strokeStyle = "white"
+                this.shopContext.rect(400, 500, 200, 200);
+                this.shopContext.stroke();
+        }
+
+        this.drawShop();
         this.drawBackground();
+        this.drawShop();
     }
             
     function displayGame(){
