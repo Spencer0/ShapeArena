@@ -37,6 +37,8 @@ function ShapeScooter(){
             widith: 100,
             height: 100,
         },
+        gameWorldHeight: 1500,
+        gameWorldWidth: 1500,
         canvasPadding: 25
     }
 
