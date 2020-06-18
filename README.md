@@ -1,7 +1,7 @@
 ## Play Here
 
 https://fathomless-wildwood-39242.herokuapp.com/
-![Ingame screenshot](https://raw.githubusercontent.com/Spencer0/ShapeArena/master/screenshots/dark_mode.png)
+![Ingame screenshot](https://raw.githubusercontent.com/Spencer0/ShapeArena/master/screenshots/dark.PNG)
 
 ## How to play
 
