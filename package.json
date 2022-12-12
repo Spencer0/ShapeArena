@@ -10,7 +10,7 @@
   "author": "spencer",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-basic-auth": "^1.2.0",
     "jest": "^26.0.1",
     "jest-cli": "^26.0.1",
